@@ -112,12 +112,13 @@ WINDOW* MapEditor::createLegendWindow() {
     
     mvwprintw(pwTemp, 3, 1, " # (w)all");
     mvwprintw(pwTemp, 4, 1, " A (p)layer");
-    mvwprintw(pwTemp, 5, 1, " o (c)hest");
-    mvwprintw(pwTemp, 6, 1, " x (m)onster");  
+    mvwprintw(pwTemp, 5, 1, " n (c)hest");
+    mvwprintw(pwTemp, 6, 1, " x (m)onster");
+    mvwprintw(pwTemp, 7, 1, " O (e)ntrace");
+    mvwprintw(pwTemp, 8, 1, " @ e(x)it");
     
-    mvwprintw(pwTemp, 8, 1, " (a)uto walls");
+    mvwprintw(pwTemp, 10, 1, " (a)uto walls");
     // disabled, specific of door have not been determined
-    //mvwprintw(pwTemp, 9, 1, " (d)oor");
     
     mvwprintw(pwTemp, 11, 1, " (r)emove");
     
@@ -152,6 +153,8 @@ void MapEditor::edit() {
             case 'c':
             case 'm':
             case 'r':
+            case 'e':
+            case 'x':
                 addatcsr(c);
                 break;
             case 'a':
@@ -235,15 +238,14 @@ void MapEditor::mvcsrpos(int y, int x) {
 }
 
 void MapEditor::refreshmap() {
-    for (int i = 0; i < STD_Y; i++) {
-        for (int j = 0; j < STD_X; j++) {
-            mvwprintw(stdscr, i, j, "%c", static_cast<char>((pmap->getAtLocation(i, j))->mapObjectType));
+    for (int y = 0; y < STD_Y; y++) {
+        for (int x = 0; x < STD_X; x++) {
+            mvwprintw(stdscr, y, x, "%c", (pmap->getAtLocation(y, x))->mapObjectType);
         }
     }
     
     // refresh the cursor makes it all blinky by itself ;D
-    // mvcsr(NULL);
-    
+    // mvcsr(NULL);   
     refresh();
 }
 
@@ -259,6 +261,26 @@ void MapEditor::addatcsr(int c) {
             for (int i = 0; i < STD_Y; i++) {
                 for (int j = 0; j < STD_X; j++) {
                     if ((pmap->getAtLocation(i, j))->mapObjectType == PLAYER)
+                        pmap->setAtLocation(i, j, MapObject(i, j, EMPTY));
+                }
+            }
+            break;
+        case 'e':
+            tmp = 'O';
+            // remove the old door
+            for (int i = 0; i < STD_Y; i++) {
+                for (int j = 0; j < STD_X; j++) {
+                    if ((pmap->getAtLocation(i, j))->mapObjectType == ENTRANCE)
+                        pmap->setAtLocation(i, j, MapObject(i, j, EMPTY));
+                }
+            }
+            break;
+        case 'x':
+            tmp = '@';
+            // remove the old exit
+            for (int i = 0; i < STD_Y; i++) {
+                for (int j = 0; j < STD_X; j++) {
+                    if ((pmap->getAtLocation(i, j))->mapObjectType == EXIT)
                         pmap->setAtLocation(i, j, MapObject(i, j, EMPTY));
                 }
             }

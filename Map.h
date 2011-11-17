@@ -17,7 +17,7 @@ const int STD_X = 80-16;
 const int STD_Y = 25-1;
 
 // character representation of the game objects
-enum MapObjectType { EMPTY = ' ', WALL = '#', MONSTER = 'x', PLAYER = 'A', CHEST = 'o' };
+enum MapObjectType { EMPTY = ' ', WALL = '#', MONSTER = 'x', PLAYER = 'A', CHEST = 'n', ENTRANCE = 'O', EXIT = '@' };
 
 // structure to represent game objects
 struct MapObject {

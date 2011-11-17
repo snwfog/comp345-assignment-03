@@ -4,15 +4,11 @@
 //
 //  Created by Charles Chao Yang on 11-11-03.
 
-#include <iostream>
 #include <fstream>
 #include "Map.h"
 
 std::ostream& operator <<(std::ostream& os, const MapObject& object) {
     switch (object.mapObjectType) {
-        case EMPTY:
-            os << " ";
-            break;
         case WALL:
             os << "#";
             break;
@@ -23,7 +19,13 @@ std::ostream& operator <<(std::ostream& os, const MapObject& object) {
             os << "A";
             break;
         case CHEST:
-            os << "o";
+            os << "n";
+            break;
+        case ENTRANCE:
+            os << "O";
+            break;
+        case EXIT:
+            os << "@";
             break;
         default:
             os << " "; // EMPTY
@@ -45,8 +47,16 @@ std::istream& operator >>(std::istream& is, MapObject& object) {
             break;
         case 'A':
             object.mapObjectType = PLAYER;
-        case 'o':
+            break;
+        case 'n':
             object.mapObjectType = CHEST;
+            break;
+        case 'O':
+            object.mapObjectType = ENTRANCE;
+            break;
+        case '@':
+            object.mapObjectType = EXIT;
+            break;
         default:
             object.mapObjectType = EMPTY;
             break;
@@ -57,8 +67,6 @@ std::istream& operator >>(std::istream& is, MapObject& object) {
 
 MapObject::MapObject(int y, int x, MapObjectType type) : y(y), x(x), mapObjectType(type) {}
 
-// careful when using this constructor, because the y/x position
-// are set to 0, this could cause problem in some cases
 MapObject::MapObject() : y(0), x(0), mapObjectType(EMPTY) { }    
 
 Map::Map() : mapname("untitled_map") {
@@ -72,15 +80,17 @@ Map::Map() : mapname("untitled_map") {
 Map::Map(std::string name) : mapname(name) {
     //  check if the map already exists
     std::ifstream in;
-    std::string input;
+    in.open(name.c_str());
     
     if (!in.fail()) {
         ldmap();
     } else {
         // create empty map
-        for (int i = 0; i < STD_Y; i++)
-            for (int j = 0; j < STD_X; j++)
+        for (int i = 0; i < STD_Y; i++) {
+            for (int j = 0; j < STD_X; j++) {
                 mapObjectDatabase[i][j] = MapObject(i, j, EMPTY);
+            }
+        }
     }
     in.close();
     
