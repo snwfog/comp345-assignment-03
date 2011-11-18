@@ -73,8 +73,6 @@ Map::Map() : mapname("untitled_map") {
     for (int y = 0; y < STD_Y; y++)
         for (int x = 0; x < STD_X; x++)
             mapObjectDatabase[y][x] = MapObject(y, x, EMPTY);
-    
-    // attach(observers)
 }
 
 Map::Map(std::string name) : mapname(name) {
@@ -92,14 +90,11 @@ Map::Map(std::string name) : mapname(name) {
             }
         }
     }
-    in.close();
     
-    // attach observers
+    in.close();
 }
 
-Map::~Map() {
-    // detach observers
-}
+Map::~Map() {}
 
 void Map::ldmap() {
     std::ifstream in;
