@@ -8,8 +8,11 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include <string>
 #include <vector>
 #include <iostream>
+
+using std::string;
 
 // maximum width of stdscr
 const int STD_X = 80-16;
@@ -45,7 +48,7 @@ public:
 
 class Map {
 private:
-    std::string mapname;
+    string mapname;
     // observers vectors
     std::vector<Observer*> observers;
     // map objects database
@@ -55,14 +58,18 @@ private:
 
 public:
     Map();
-    Map(std::string);
+    Map(string);
     ~Map();
     
-    std::string getmapname() { return mapname; };
-    void save();
-    void setAtLocation(int, int, MapObject);
+    string getmapname() { return mapname; };
     MapObject* getAtLocation(int, int);
+    
 
+    void setName(string n) { mapname = n; }
+    void setAtLocation(int, int, MapObject);
+    
+    void save();
+    
     // function added for assignment 2
     // obeservers pattern
     void attach(Observer*);

@@ -10,6 +10,7 @@
 #include <sstream>
 #include "MapEditor.h"
 #include "ChestBuilder.h"
+#include "MapBuilder.h"
 
 using namespace std;
 
@@ -86,6 +87,11 @@ int main (int argc, const char* argv[]) {
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
+    
+    MapGenerator* mg = new MapGenerator();
+    mg->setMapBuilder(new ArenaBuilder());
+    mg->constructMap();
+    MapEditor* me = new MapEditor(mg->getMap());
     
     return 0;
 }

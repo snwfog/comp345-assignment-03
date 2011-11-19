@@ -20,6 +20,7 @@ struct Cursor {
 class MapEditor : Observer {
 public:
     MapEditor();
+    MapEditor(Map*);
     MapEditor(std::string);
     ~MapEditor();
     void wrtdlg(std::string);

@@ -54,7 +54,6 @@ class Armor : public Item {
 protected:
     int armor, dex;
     ArmorSlot slot;
-    map<string, int> stats;
     
 public:
     // setters

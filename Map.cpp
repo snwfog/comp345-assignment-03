@@ -69,7 +69,7 @@ MapObject::MapObject(int y, int x, MapObjectType type) : y(y), x(x), mapObjectTy
 
 MapObject::MapObject() : y(0), x(0), mapObjectType(EMPTY) { }    
 
-Map::Map() : mapname("untitled_map") {
+Map::Map() {
     for (int y = 0; y < STD_Y; y++)
         for (int x = 0; x < STD_X; x++)
             mapObjectDatabase[y][x] = MapObject(y, x, EMPTY);
@@ -124,7 +124,7 @@ void Map::setAtLocation(int y, int x, MapObject object) {
 }
 
 MapObject* Map::getAtLocation(int y, int x) {
-    return &mapObjectDatabase[y][x];
+    return &(mapObjectDatabase[y][x]);
 }
 
 void Map::notify() {

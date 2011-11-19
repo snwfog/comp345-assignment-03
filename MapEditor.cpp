@@ -51,6 +51,46 @@ MapEditor::MapEditor() {
     endwin();
 }
 
+MapEditor::MapEditor(Map* map) {
+    // ncurses initialization funcs
+    initscr();
+    noecho();
+    curs_set(0);
+    raw();
+    keypad(stdscr, TRUE);
+    wclear(stdscr);
+    refresh();
+    // end of ncurses initialization funcs
+    
+    // initialize member variables
+    csr = new Cursor();
+    pmap = map;
+    wlgd = createLegendWindow();
+    wdlg = createDialogueWindow();
+    
+    // attach itself to the observers
+    pmap->attach(this);
+    
+    // flush the map 
+    refreshmap();
+    
+    // show the cursor
+    mvcsr(NULL);
+    
+    // set the initial cursor to blinking
+    MapObject* tmp = pmap->getAtLocation(csr->y, csr->x);
+    attron(A_BLINK | A_UNDERLINE);
+    mvwprintw(stdscr, csr->y, csr->x, "%c", static_cast<char>(tmp->mapObjectType));
+    attroff(A_BLINK | A_UNDERLINE);
+    refresh();
+    
+    // go edit mode
+    edit();
+    
+    // end ncurses
+    endwin();
+}
+
 MapEditor::MapEditor(std::string name) {
     // ncurses initialization funcs
     initscr();
