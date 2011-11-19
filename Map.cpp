@@ -18,7 +18,7 @@ std::ostream& operator <<(std::ostream& os, const MapObject& object) {
         case PLAYER:
             os << "A";
             break;
-        case CHEST:
+        case TREASURE_CHEST:
             os << "n";
             break;
         case ENTRANCE:
@@ -49,7 +49,7 @@ std::istream& operator >>(std::istream& is, MapObject& object) {
             object.mapObjectType = PLAYER;
             break;
         case 'n':
-            object.mapObjectType = CHEST;
+            object.mapObjectType = TREASURE_CHEST;
             break;
         case 'O':
             object.mapObjectType = ENTRANCE;

@@ -38,7 +38,7 @@ void FullplateArmorBuilder::buildArmor(string name, ArmorSlot slot) {
     armor->setAllStats();
 }
 
-void LongswordBuilder::buildWeapon(string name, WeaponWield wield, Size size) {
+void LongswordBuilder::buildLongsword(string name, WeaponWield wield, Size size) {
     longsword->setName(name);
     longsword->setWeaponWield(wield);
     longsword->setSize(size);
@@ -48,11 +48,10 @@ void LongswordBuilder::buildWeapon(string name, WeaponWield wield, Size size) {
 void ItemGenerator::constructArmor(string name, ArmorSlot slot) {
     armorBuilder->createNewItem();
     armorBuilder->buildArmor(name, slot);
-    armorBuilder->setAllStats(slot);
 }
 
 void ItemGenerator::constructLongsword(string name, WeaponWield wield, Size size) {
     longswordBuilder->createNewItem();
-    longswordBuilder->buildWeapon(name, wield, size);
+    longswordBuilder->buildLongsword(name, wield, size);
 }
 

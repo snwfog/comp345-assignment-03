@@ -10,12 +10,13 @@
 
 using std::string;
 
+
 int roll(int range) {
-    return rand()%(range);
+    return rand()%(range) + 1;
 }
 
-int roll(int count, int range, int modifier) {
-    int rollResult;
+int roll(int range, int count, int modifier) {
+    int rollResult = 0;
     for (int i = 0; i < count; i++)
         rollResult += roll(range);
     return rollResult + modifier;
@@ -162,7 +163,7 @@ void Longsword::setCost() {
         cost = 45;
         break;
     default:
-        cost = NULL;
+        cost = 10000;
         break;
     }
 }

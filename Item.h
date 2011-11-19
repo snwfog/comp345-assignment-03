@@ -13,22 +13,14 @@
 using std::string;
 using std::map;
 
-enum Size {
-    FINE = 8,
-    DIMINUTIVE = 4, 
-    TINY = 2,
-    SMALL = 1,
-    MEDIUM = 0,
-    LARGE = -1,
-    HUGE = -2,
-    GARGANTUAN = -4,
-    COLOSSAL = -8
-};
+enum Size { FINE = 1, DIMINUTIVE, TINY, SMALL, MEDIUM,
+            LARGE, HUGE, GARGANTUAN, COLOSSAL };
 
-enum ArmorSlot { HEAD, CHEST, HANDS, FEET, 
-    WAIST, WRIST, FINGER } ;
-enum WeaponSlot { MAINHAND, OFFHAND };
-enum WeaponWield { ONEHAND, TWOHAND };
+enum ArmorSlot { HEAD = 1, CHEST, HANDS, FEET, 
+                 WAIST, WRIST, FINGER } ;
+
+enum WeaponSlot { MAINHAND = 1, OFFHAND };
+enum WeaponWield { ONEHAND = 1, TWOHAND };
 
 std::ostream& operator <<(std::ostream& os, const ArmorSlot& s);
 std::ostream& operator <<(std::ostream& os, const WeaponSlot& s);
@@ -38,33 +30,49 @@ std::ostream& operator <<(std::ostream& os, const Size& s);
 
 // d20 roll functions
 int roll(int range);
-int roll(int count, int range, int modifier = 0);
+int roll(int range, int count, int modifier = 0);
 
 class Item {
 protected:
     int cost;
     string name;
+    map<string, int> stats;
 public:
     int getCost() { return cost; }
     string getName() { return name; }
+    map<string, int> getStatsMap() { return stats; }
     
-    void setCost(int c) { cost = c; }
+    void setCost(int c) { 
+        cost = c; 
+        stats["Cost"] = c;
+    }
     void setName(string n) { name = n; }
-    
 };
 
 
 class Armor : public Item {
-private:
+protected:
     int armor, dex;
     ArmorSlot slot;
     map<string, int> stats;
     
 public:
     // setters
-    void setArmor(int a) { armor = a; }
-    void setMaxDexterity(int d) { dex = d; }
-    void setArmorSlot(ArmorSlot s) { slot = s; }
+    void setArmor(int a) { 
+        armor = a; 
+        stats["Armor"] = a;
+    }
+    
+    void setMaxDexterity(int d) {
+        dex = d; 
+        stats["Max. Dexterity"] = d;
+    }
+    
+    void setArmorSlot(ArmorSlot s) { 
+        slot = s; 
+        stats["Slot"] = s;
+    }
+    
     void setStats(string s, int v) { stats[s] = v; }
     void setAllStats();
     
@@ -72,7 +80,7 @@ public:
     int getArmor() { return armor; }
     int getMaxDexterity() { return dex; }
     ArmorSlot getSlot() { return slot; }
-    virtual int getStats(string s);
+    int getStats(string s);
 };
 
 //class Potion : public Item {
@@ -97,8 +105,16 @@ protected:
     Size size;
 public:
     // setters
-    void setSize(Size s) { size = s; }
-    void setWeaponWield(WeaponWield w) { wield = w; }
+    void setSize(Size s) { 
+        size = s; 
+        stats["Size"] = s;
+    }
+    
+    void setWeaponWield(WeaponWield w) { 
+        wield = w; 
+        stats["Wield"] = w;
+    }
+    
     virtual void setCost() = 0;
     // getters
     Size getSize() { return size; }

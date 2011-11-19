@@ -25,9 +25,6 @@ public:
     void setName(string name) { armor->setName(name); }
     void setCost(int cost) { armor->setCost(cost); }
     void setArmorSlot(ArmorSlot slot) { armor->setArmorSlot(slot); }
-    void setStats(string stats, int value) { armor->setStats(stats, value); }
-    
-    void setAllStats(ArmorSlot slot);
     virtual void buildArmor(string name, ArmorSlot slot) = 0;
 protected:
     Armor* armor;
@@ -55,9 +52,10 @@ public:
     Longsword* getWeapon() { return longsword; }
     void createNewItem() { longsword = new Longsword(); }
     void setName(string name) { longsword->setName(name); }
+    void setCost(int cost) { longsword->setCost(); }
     void setWeaponSize(Size size) { longsword->setSize(size); }
     void setWield(WeaponWield wield) { longsword->setWeaponWield(wield); }
-    void buildWeapon(string name, WeaponWield wield, Size size);
+    void buildLongsword(string name, WeaponWield wield, Size size);
 };
 
 
@@ -70,7 +68,7 @@ public:
     
     // longsword builder
     void setLongswordBuilder(LongswordBuilder* lsb) { longswordBuilder = lsb; }
-    Longsword* getWeapon() { return longswordBuilder->getWeapon(); }
+    Longsword* getLongsword() { return longswordBuilder->getWeapon(); }
     void constructLongsword(string name, WeaponWield wield, Size size);
     
 private:

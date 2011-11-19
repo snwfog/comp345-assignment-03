@@ -8,35 +8,33 @@
 #ifndef CHEST_H
 #define CHEST_H
 
-#include <stack>
+#include <vector>
 #include "Item.h"
 
-using std::stack;
+using std::vector;
 
 class Chest {
     
 public:
     // iteration over a vector see:
     // http://stackoverflow.com/questions/409348/iteration-over-vector-in-c
-    Chest();
-    Chest(int size);
-    ~Chest();
-    
     void putItem(Item* item) {
-        chestContainer.push(item);
+        chestContainer.push_back(item);
     }
     
-    Item* getItem() {
-        if (!chestContainer.empty()) {
-            Item* tmp = chestContainer.top();
-            chestContainer.pop();
-            return tmp;
-        }
-        return NULL;
+    Item* getItem(int index) {
+        return chestContainer[index];
     }
+    
+    void removeItem(int index) {
+        delete chestContainer[index];
+        chestContainer[index] = NULL;
+    }
+    
+    int size() { return (int)(chestContainer.size()); }
     
 private:
-    stack<Item*> chestContainer;
+    vector<class Item*> chestContainer;
 };
 
 #endif
