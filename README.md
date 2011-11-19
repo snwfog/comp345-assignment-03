@@ -33,7 +33,7 @@ __Note: A version of this assignment is also available on [GitHub](https://githu
 #### ArenaBuilder
 > ArenaBuilder, implements MapBuilder. Build a 9x9 arena map, as instructed by assignment 3, with a guardian, and a potentially random generated chest. ArenaBuilder implements the placeMapObject method of MapBuilder.For random generated chest, please see ChestBuilder.h and .cpp.
 
-	##### Arena Builder GUI
+##### 	Arena Builder GUI
 
 		8	####O####
 		9	#		#
