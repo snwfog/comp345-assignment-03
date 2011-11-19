@@ -1,9 +1,13 @@
-//
-//  Map.h
-//  comp345-assignment-02
-//
-//  Created by Charles Chao Yang on 11-11-03.
-
+/**
+ *  Map.h
+ *  comp345-assignment-03
+ *
+ *  Same as from assignment 2. Class that represents
+ *  a Map object. Added the "level" member variable
+ *  such that Map with different level will possibly
+ *  contains chest with corresponding level of items.
+ *
+ */
 
 #ifndef MAP_H
 #define MAP_H
@@ -49,6 +53,7 @@ public:
 class Map {
 private:
     string mapname;
+    int mapLevel;
     // observers vectors
     std::vector<Observer*> observers;
     // map objects database
@@ -63,10 +68,11 @@ public:
     
     string getmapname() { return mapname; };
     MapObject* getAtLocation(int, int);
-    
+    int getMapLevel() { return mapLevel; }
 
     void setName(string n) { mapname = n; }
     void setAtLocation(int, int, MapObject);
+    void setMapLevel(int lvl) { mapLevel = lvl; } 
     
     void save();
     

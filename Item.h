@@ -1,9 +1,15 @@
-//
-//  Item.h
-//  comp345-project
-//
-//  Created by Charles Chao Yang on 11-11-07.
-
+/**
+ *  Item.h
+ *  comp345-assignment-03
+ *
+ *  Size, ArmorSlot, WeaponSlot, WeaponWield
+ *  Item, Armor, Potion, Weapon, Longsword
+ *  All of these class are pretty much self-explanatory,
+ *  and they are logically built from d20 equipments rules.
+ *  This class is different from assignment 2, I have moved
+ *  all the constructor to their representative "builder"
+ *  class, see ItemBuilder.h. 
+ */
 #ifndef ITEM_H
 #define ITEM_H
 
@@ -13,6 +19,9 @@
 using std::string;
 using std::map;
 
+/**
+ * Size enum to handle all size related variables.
+ */
 enum Size { FINE = 1, DIMINUTIVE, TINY, SMALL, MEDIUM,
             LARGE, HUGE, GARGANTUAN, COLOSSAL };
 
@@ -28,10 +37,15 @@ std::ostream& operator <<(std::ostream& os, const WeaponWield& s);
 std::ostream& operator <<(std::ostream& os, const Size& s);
 
 
-// d20 roll functions
+/**
+ * Roll function mimicing the d20 roll syntax
+ */
 int roll(int range);
 int roll(int range, int count, int modifier = 0);
 
+/**
+ * Item class
+ */
 class Item {
 protected:
     int cost;
@@ -42,14 +56,13 @@ public:
     string getName() { return name; }
     map<string, int> getStatsMap() { return stats; }
     
-    void setCost(int c) { 
-        cost = c; 
-        stats["Cost"] = c;
-    }
+    void setCost(int c) { cost = c; }
     void setName(string n) { name = n; }
 };
 
-
+/**
+ * Armor class, extends Item
+ */
 class Armor : public Item {
 protected:
     int armor, dex;
@@ -82,21 +95,21 @@ public:
     int getStats(string s);
 };
 
-//class Potion : public Item {
-//public:
-//    Potion() : Item("Healing Potion", 2), pool(0) {}
-//    Potion(int s) : Item("Healing Potion", 2), pool(s) {}
-//    int get_healing_amount() { return pool; }
-//    
-//    friend std::ostream& operator <<(std::ostream& ostream, const Potion& item) {
-//        ostream << "[Healing Potion][Maximum HP: " << item.pool << "]";
-//        return ostream;
-//    }
-//    
-//private:
-//    int pool;
-//};
+/**
+ * Potion class, extends Item
+ */
+class Potion : public Item {
+public:
+    int getPotionPool() { return pool; }
+    void setPotionPool(int p) { pool = p; }
+private:
+    int pool;
+};
 
+
+/**
+ * Weapon class, extends Item
+ */
 class Weapon : public Item {
 protected:
     // int hardness, critical;
@@ -122,6 +135,9 @@ public:
     virtual int getWeaponDamage() = 0;
 };
 
+/**
+ * Longsword class, extends Weapon
+ */
 class Longsword : public Weapon {
 public:
     void setCost();

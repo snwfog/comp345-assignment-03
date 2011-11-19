@@ -1,8 +1,8 @@
-//
-//  MapEditor.cpp
-//  comp345-assignment-02
-//
-//  Created by Charles Chao Yang on 11-11-03.
+/**
+ *  MapEditor.cpp
+ *  comp345-assignment-03
+ *
+ */
 
 #include <iostream>
 #include <sstream>

@@ -1,9 +1,10 @@
-//
-//  MapEditor.h
-//  comp345-assignment-02
-//
-//  Created by Charles Chao Yang on 11-11-03.
-
+/**
+ *  MapEditor.h
+ *  comp345-assignment-03
+ * 
+ *  Same as from assignment 2. This class loads the map
+ *  and allows map edits.
+ */
 #ifndef MAPEDITOR_H
 #define MAPEDITOR_H
 

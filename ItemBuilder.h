@@ -1,8 +1,10 @@
-//
-//  ItemBuilder.h
-//  comp345-assignment-03
-//
-//  Created by Charles Chao Yang on 11-11-17.
+/**
+ *  ItemBuilder.h
+ *  comp345-assignment-03
+ * 
+ *  ItemBuilder class reponsible of builder all of the Item
+ *  objects used in the game.
+ */
 
 #ifndef ITEMBUILDER_H
 #define ITEMBUILDER_H

@@ -1,8 +1,8 @@
-//
-//  Item.cpp
-//  comp345-project
-//
-//  Created by Charles Chao Yang on 11-11-07.
+/**
+ *  Item.cpp
+ *  comp345-assignment-03
+ *
+ */
 
 #include <iostream>
 #include <cstdlib>
