@@ -1,4 +1,4 @@
-__Note: A version of this assignment is also available on [GitHub](https://github.com/snwfog/comp345-assignment-03).__
+__Note: I STRONGLY suggest to review this project that is also availabe on [GitHub](https://github.com/snwfog/comp345-assignment-03).__
 
 # COMP345 Assignment 3 README
 ## Map Builder Programming Pattern
@@ -6,18 +6,42 @@ __Note: A version of this assignment is also available on [GitHub](https://githu
 ### Requirement
 - __ncurses 5.9 lib installed__
 
+##### Note: I have completed all the 3 parts that were asked in assignment 3. You can choose to correct all of them, or you should correct the __MapEditor__ sections. The MapEditor section includes Map, MapBuilder, MapEditor, and you should comment out all the irrelevant "test" scenarios that I have included in the main.cpp.
 
-### Important Files
-- Map.cpp & .h
-- MapBuilder.cpp & .h
-- Item.cpp & .h
-- ItemBuilder.cpp & .h
-- _Chest.cpp & .h (Not as part of assignment 3)_
-- _ChestBuilder.cpp & .h (Not as part of assignment 3)_
+### File Hierarchy
+> Files are stored in their appropriate __virtual__ folders in my IDE. However, they are not placed in real folders. Here is the file hierarchy tree.
+	
+	comp345-assignment-03/
+	+-main.cpp
+	+-Function.h
+	+-Function.cpp
+	  +-Character
+	  | +-Character.h
+	  | +-Character.cpp
+	  | +-CharacterBuilder.h
+	  | +-CharacterBuilder.cpp
+	  +-Map
+	  | +-Map.h
+	  | +-Map.cpp
+	  | +-MapBuilder.h
+	  | +-MapBuilder.cpp
+ 	  | +-MapEditor/
+	  |   +-MapEditor.h
+	  |   +-MapEditor.cpp
+	  +-Item
+	  | +-Item.h
+	  | +-Item.cpp
+	  | +-ItemBuilder.h
+	  | +-ItemBuilder.cpp
+	  +-Chest
+	  | +-Chest.h
+	  | +-Chest.cpp
+	  | +-ChestBuilder.h
+	  | +-ChestBuilder.cpp
+	  	
 
 ### To Run
-> Use this command in the terminal to compile and link the assignment
-	g++ Map.cpp MapBuilder.cpp MapEditor.cpp main.cpp -o main
+> You must compile all the provided .cpp files and additionally, you must link your compiler with the ncurses library using the command `-lnucrses`.
 > Use this command to run the main.cpp
 	./main
 
