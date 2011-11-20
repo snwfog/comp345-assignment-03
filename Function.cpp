@@ -5,7 +5,7 @@
  */
 
 #include <iostream>
-#include "Functions.h"
+#include "Function.h"
 
 int roll(int range) {
     return rand()%(range) + 1;
@@ -18,16 +18,18 @@ int roll(int range, int count, int modifier) {
     return rollResult + modifier;
 }      
 
-
 int rollBaseStats() {
-    int lowest = (total = roll(6));
+    int lowest = roll(6);
+    int total = lowest;
     int next;
 
     for (int i = 0; i < 3; i++) {
         if ((next = roll(6)) < lowest)
             lowest = next;
-        total += nextRoll;
+        total += next;
     }
     
     return total - lowest;
 }
+
+int toModifier(int n) { return (n - 10)/2; }

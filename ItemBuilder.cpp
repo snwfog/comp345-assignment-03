@@ -43,6 +43,8 @@ void LongswordBuilder::buildLongsword(string name, WeaponWield wield, Size size)
     longsword->setWeaponWield(wield);
     longsword->setSize(size);
     longsword->setCost();
+    longsword->setAttackBonus(roll(5));
+    longsword->setDamageBonus(roll(5));
 }
 
 void ItemGenerator::constructArmor(string name, ArmorSlot slot) {

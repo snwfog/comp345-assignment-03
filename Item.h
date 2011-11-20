@@ -15,7 +15,7 @@
 
 #include <iostream>
 #include <map>
-#include "Functions.h"
+#include "Function.h"
 
 using std::string;
 using std::map;
@@ -23,16 +23,12 @@ using std::map;
 /**
  * Enumerations
  */
-enum Size { FINE = 1, DIMINUTIVE, TINY, SMALL, MEDIUM,
-            LARGE, HUGE, GARGANTUAN, COLOSSAL };
-
-enum ArmorSlot { HEAD = 1, CHEST, HANDS, FEET, 
-                 WAIST, WRIST, FINGER } ;
-
+enum ArmorSlot { HEAD = 1, CHEST, HANDS, FEET, WAIST, WRIST, FINGER };
+enum Size { FINE, DIMINUTIVE, TINY, SMALL, MEDIUM, BUGE, LARGE, GARGANTUAN, COLOSSAL};
 enum WeaponSlot { MAINHAND = 1, OFFHAND };
 enum WeaponWield { ONEHAND = 1, TWOHAND };
+enum Attribute { ARMOR_CLASS = 20, MAX_DEXTERITY, ARMOR_SLOT, WEAPON_WIELD, WEAPON_SLOT, SIZE, POTION_POOL, CON, STR, DEX, WIS, INT, CHR, ATTACK_BONUS, DAMAGE_BONUS, CRITICAL };
 
-enum Attribute { ARMOR_CLASS = 20, MAX_DEXTERITY, ARMOR_SLOT, WEAPON_WIELD, WEAPON_SLOT, SIZE, POTION_POOL, CON, STR, DEX, WIS, INT, CHR };
 
 std::ostream& operator <<(std::ostream& os, const ArmorSlot& s);
 std::ostream& operator <<(std::ostream& os, const WeaponSlot& s);
@@ -111,6 +107,7 @@ protected:
     // int hardness, critical;
     WeaponWield wield;
     Size size;
+    int attackBonus, damageBonus;
 public:
     // setters
     void setSize(Size s) { 
@@ -123,10 +120,23 @@ public:
         stats[WEAPON_WIELD] = w;
     }
     
+    void setAttackBonus(int ab) {
+        attackBonus = ab;
+        stats[ATTACK_BONUS] = ab;
+    }
+    
+    void setDamageBonus(int db) {
+        damageBonus = db;
+        stats[DAMAGE_BONUS] = db;
+    }
+    
     virtual void setCost() = 0;
+    
     // getters
     Size getSize() { return size; }
     WeaponWield getWeaponWield() { return wield; }
+    int getAttackBonus() { return attackBonus; }
+    int getDamageBonus() { return damageBonus; }
     
     virtual int getWeaponDamage() = 0;
 };

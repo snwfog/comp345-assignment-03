@@ -27,7 +27,7 @@ public:
     Map* getMap() { return map; }
     void createNewMap() { map = new Map(); }
     void setName(string name) { map->setName(name); }
-    virtual void setMapLevel(int lvl = 0) { map->setMapLevel(lvl); }
+    void setMapLevel(int lvl = 0) { map->setMapLevel(lvl); }
     /**
      * placeMapObject method. Must be virtually overloaded to
      * place different objects at different location to 

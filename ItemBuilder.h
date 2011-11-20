@@ -16,17 +16,12 @@ using std::string;
 class ItemBuilder {
 public:
     virtual void createNewItem() = 0;
-    virtual void setName(string itemName) = 0;
-    virtual void setCost(int itemCost) = 0;
 };
 
 class ArmorBuilder : public ItemBuilder {
 public:
     Armor* getArmor() { return armor; }
     void createNewItem() { armor = new Armor(); }
-    void setName(string name) { armor->setName(name); }
-    void setCost(int cost) { armor->setCost(cost); }
-    void setArmorSlot(ArmorSlot slot) { armor->setArmorSlot(slot); }
     virtual void buildArmor(string name, ArmorSlot slot) = 0;
 protected:
     Armor* armor;
@@ -53,10 +48,6 @@ protected:
 public:
     Longsword* getWeapon() { return longsword; }
     void createNewItem() { longsword = new Longsword(); }
-    void setName(string name) { longsword->setName(name); }
-    void setCost(int cost) { longsword->setCost(); }
-    void setWeaponSize(Size size) { longsword->setSize(size); }
-    void setWield(WeaponWield wield) { longsword->setWeaponWield(wield); }
     void buildLongsword(string name, WeaponWield wield, Size size);
 };
 

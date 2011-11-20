@@ -11,11 +11,13 @@
 #include "MapEditor.h"
 #include "ChestBuilder.h"
 #include "MapBuilder.h"
+#include "CharacterBuilder.h"
 
 using namespace std;
 
 int main (int argc, const char* argv[]) {
     srand(time(0));
+    
 //    int opt;
 //    string input = "";
 //    cout << "Welcome to the Game Editor!" << endl;
@@ -87,11 +89,31 @@ int main (int argc, const char* argv[]) {
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
+//    
+//    MapGenerator* mg = new MapGenerator();
+//    mg->setMapBuilder(new ArenaBuilder());
+//    mg->constructMap();
+//    MapEditor* me = new MapEditor(mg->getMap());
+//    
     
-    MapGenerator* mg = new MapGenerator();
-    mg->setMapBuilder(new ArenaBuilder());
-    mg->constructMap();
-    MapEditor* me = new MapEditor(mg->getMap());
+/**
+ * CharacterBuilder test
+ */
+    FighterGenerator* fg = new FighterGenerator();
+    fg->setCharacterBuilder(new BullyBuilder());
+    fg->createNewFighter("Johnny");
+    Character* aBully = fg->getCharacter();
+    
+    cout << aBully->getName() << endl;
+    cout << aBully->getCharacterClass() << endl;
+    cout << "STR: " << aBully->getAbilityScore(STR) << endl;
+    cout << "CON: " << aBully->getAbilityScore(CON) << endl;
+    cout << "DEX: " << aBully->getAbilityScore(DEX) << endl;
+    cout << "INT: " << aBully->getAbilityScore(INT) << endl;
+    cout << "CHR: " << aBully->getAbilityScore(CHR) << endl;
+    cout << "WIS: " << aBully->getAbilityScore(WIS) << endl;
+    cout << "HP: " << aBully->getHitPoint() << endl;
+    cout << "MP: " << aBully->getManaPoint() << endl;
     
     return 0;
 }

@@ -76,7 +76,7 @@ std::ostream& operator <<(std::ostream& os, const Size& s) {
         case LARGE:
             os << "Large";
             break;
-        case HUGE:
+        case BUGE:
             os << "Huge";
             break;
         case GARGANTUAN:
@@ -146,7 +146,7 @@ void Longsword::setCost() {
     case LARGE:
         cost = 30;
         break;
-    case HUGE:
+    case BUGE:
         cost = 45;
         break;
     default:
@@ -166,7 +166,7 @@ int Longsword::getWeaponDamage() {
         case LARGE:
             return roll(2, 6);
             break;
-        case HUGE:
+        case BUGE:
             return roll(3, 6);           
             break;
         default:
