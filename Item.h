@@ -15,12 +15,13 @@
 
 #include <iostream>
 #include <map>
+#include "Functions.h"
 
 using std::string;
 using std::map;
 
 /**
- * Size enum to handle all size related variables.
+ * Enumerations
  */
 enum Size { FINE = 1, DIMINUTIVE, TINY, SMALL, MEDIUM,
             LARGE, HUGE, GARGANTUAN, COLOSSAL };
@@ -31,17 +32,12 @@ enum ArmorSlot { HEAD = 1, CHEST, HANDS, FEET,
 enum WeaponSlot { MAINHAND = 1, OFFHAND };
 enum WeaponWield { ONEHAND = 1, TWOHAND };
 
+enum Attribute { ARMOR_CLASS = 20, MAX_DEXTERITY, ARMOR_SLOT, WEAPON_WIELD, WEAPON_SLOT, SIZE, POTION_POOL, CON, STR, DEX, WIS, INT, CHR };
+
 std::ostream& operator <<(std::ostream& os, const ArmorSlot& s);
 std::ostream& operator <<(std::ostream& os, const WeaponSlot& s);
 std::ostream& operator <<(std::ostream& os, const WeaponWield& s);
 std::ostream& operator <<(std::ostream& os, const Size& s);
-
-
-/**
- * Roll function mimicing the d20 roll syntax
- */
-int roll(int range);
-int roll(int range, int count, int modifier = 0);
 
 /**
  * Item class
@@ -50,11 +46,11 @@ class Item {
 protected:
     int cost;
     string name;
-    map<string, int> stats;
+    map<Attribute, int> stats;
 public:
     int getCost() { return cost; }
     string getName() { return name; }
-    map<string, int> getStatsMap() { return stats; }
+    map<Attribute, int> getStatsMap() { return stats; }
     
     void setCost(int c) { cost = c; }
     void setName(string n) { name = n; }
@@ -72,20 +68,20 @@ public:
     // setters
     void setArmor(int a) { 
         armor = a; 
-        stats["Armor"] = a;
+        stats[ARMOR_CLASS] = a;
     }
     
     void setMaxDexterity(int d) {
         dex = d; 
-        stats["Max. Dexterity"] = d;
+        stats[MAX_DEXTERITY] = d;
     }
     
     void setArmorSlot(ArmorSlot s) { 
         slot = s; 
-        stats["Slot"] = s;
+        stats[ARMOR_SLOT] = s;
     }
     
-    void setStats(string s, int v) { stats[s] = v; }
+    void setStats(Attribute a, int v) { stats[a] = v; }
     void setAllStats();
     
     // getters
@@ -119,12 +115,12 @@ public:
     // setters
     void setSize(Size s) { 
         size = s; 
-        stats["Size"] = s;
+        stats[SIZE] = s;
     }
     
     void setWeaponWield(WeaponWield w) { 
         wield = w; 
-        stats["Wield"] = w;
+        stats[WEAPON_WIELD] = w;
     }
     
     virtual void setCost() = 0;

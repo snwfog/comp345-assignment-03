@@ -1,6 +1,8 @@
-//
-//  ChestBuilder.h
-//  comp345-assignment-03
+/**
+ *  ChestBuilder.h
+ *  comp345-assignment-03
+ *
+ */
 
 #ifndef CHESTBUILDER_H
 #define CHESTBUILDER_H

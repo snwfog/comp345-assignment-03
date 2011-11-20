@@ -1,9 +1,8 @@
-//
-//  Chest.h
-//  comp345-assignment-03
-//
-//  Created by Charles Chao Yang on 11-11-17.
-
+/**
+ *  Chest.h
+ *  comp345-assignment-03
+ *
+ */
 
 #ifndef CHEST_H
 #define CHEST_H

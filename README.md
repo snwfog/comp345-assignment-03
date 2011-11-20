@@ -50,3 +50,5 @@ __Note: A version of this assignment is also available on [GitHub](https://githu
 #### MapGenerator
 > MapGenerator is the director of MapBuilders. Can construct different type of map by invoking the constructMap() method, which itself calls the overloaded methods from MapBuilders.
 
+__Additional comments inside of class files.__
+

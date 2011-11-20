@@ -1,6 +1,8 @@
-//
-//  ChestBuilder.cpp
-//  comp345-assignment-03
+/**
+ *  ChestBuilder.cpp
+ *  comp345-assignment-03
+ *
+ */
 
 #include "ChestBuilder.h"
 

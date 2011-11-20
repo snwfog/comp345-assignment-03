@@ -10,19 +10,6 @@
 
 using std::string;
 
-
-int roll(int range) {
-    return rand()%(range) + 1;
-}
-
-int roll(int range, int count, int modifier) {
-    int rollResult = 0;
-    for (int i = 0; i < count; i++)
-        rollResult += roll(range);
-    return rollResult + modifier;
-}      
-
-
 // overloaded << operator for ENUM to string conversion
 std::ostream& operator <<(std::ostream& os, const ArmorSlot& s) {
     switch (s) {
@@ -124,24 +111,24 @@ std::ostream& operator <<(std::ostream& os, const WeaponWield& s) {
 void Armor::setAllStats() {
     switch (slot) {
         case HEAD:
-            setStats("INT", roll(5));
-            setStats("WIS", roll(5));
+            setStats(INT, roll(5));
+            setStats(WIS, roll(5));
             break;
         case WRIST:
-            setStats("STR", roll(5));
+            setStats(STR, roll(5));
             break;
         case FEET:
-            setStats("DEX", roll(5));
+            setStats(DEX, roll(5));
             break;
         case WAIST:
-            setStats("STR", roll(5));
-            setStats("CON", roll(5));
+            setStats(STR, roll(5));
+            setStats(CON, roll(5));
             break;
         case FINGER:
-            setStats("STR", roll(5));
-            setStats("CON", roll(5));
-            setStats("WIS", roll(5));
-            setStats("CHR", roll(5));
+            setStats(STR, roll(5));
+            setStats(CON, roll(5));
+            setStats(WIS, roll(5));
+            setStats(CHR, roll(5));
             break;
         default:
             break;
