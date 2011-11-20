@@ -31,20 +31,13 @@ void CharacterBuilder::setBaseAbilityScore(Attribute* at) {
     character->setAbilityRanks(at);
 }
 
-void CharacterBuilder::levelUp() {
-    character->setLevel(character->getLevel() + 1);
-    int hp = character->getHitPoint() + roll(10) + toModifier(character->getAbilityScore(CON));
-    character->setMaxHitPoint(hp);
-    character->setHitPoint(hp);
-    character->levelUp(); // notify observers
-}
-
 void BullyBuilder::initializeCharacterType() {
     Attribute abilityRanks[] = { STR, CON, DEX, INT, CHR, WIS };
     
     character->setCharacterClass("Bully");
     character->setLevel(1);
-    setBaseAbilityScore(&(abilityRanks[0]));
+    character->setMaxAttackBonus(1);
+    setBaseAbilityScore(abilityRanks);
     character->setHitPoint(roll(10) + toModifier(character->getAbilityScore(CON)));
     character->setMaxHitPoint(character->getHitPoint());
     character->setManaPoint(0);
@@ -56,7 +49,8 @@ void NimbleBuilder::initializeCharacterType() {
     
     character->setCharacterClass("Nimble");
     character->setLevel(1);
-    setBaseAbilityScore(&(abilityRanks[0]));
+    character->setMaxAttackBonus(1);
+    setBaseAbilityScore(abilityRanks);
     character->setHitPoint(roll(10) + toModifier(CON));
     character->setMaxHitPoint(character->getHitPoint());
     character->setManaPoint(0);
@@ -68,7 +62,8 @@ void TankBuilder::initializeCharacterType() {
     
     character->setCharacterClass("Tank");
     character->setLevel(1);
-    setBaseAbilityScore(&(abilityRanks[0]));
+    character->setMaxAttackBonus(1);
+    setBaseAbilityScore(abilityRanks);
     character->setHitPoint(roll(10) + toModifier(CON));
     character->setMaxHitPoint(character->getHitPoint());
     character->setManaPoint(0);

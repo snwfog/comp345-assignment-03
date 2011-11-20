@@ -16,24 +16,23 @@ public:
     
     void setBaseAbilityScore(Attribute*);
     virtual void initializeCharacterType() = 0;
-    virtual void levelUp();
 protected:
     Character* character;
 };
 
 class BullyBuilder : public CharacterBuilder {
 public:
-    virtual void initializeCharacterType();
+    void initializeCharacterType();
 };
 
 class NimbleBuilder : public CharacterBuilder {
 public:
-    virtual void initializeCharacterType();
+    void initializeCharacterType();
 };
 
 class TankBuilder : public CharacterBuilder {
 public:
-    virtual void initializeCharacterType();
+    void initializeCharacterType();
 };
 
 class FighterGenerator {

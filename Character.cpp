@@ -89,5 +89,10 @@ Armor* Character::getEquippedArmor(ArmorSlot as) {
 }
 
 void Character::levelUp() {
+    setLevel(getLevel() + 1);
+    int hp = getHitPoint() + roll(10) + toModifier(getAbilityScore(CON));
+    setMaxHitPoint(hp);
+    setHitPoint(hp);
+    setMaxAttackBonus(getMaxAttackBonus() + 1);
     // NOTIFY OBSERVERS!
 }
