@@ -42,6 +42,7 @@ __Note: I STRONGLY suggest to review this project that is also availabe on [GitH
 
 ### To Run
 > You must compile all the provided .cpp files and additionally, you must link your compiler with the ncurses library using the command `-lnucrses`.
+>
 > Use this command to run the main.cpp
 	./main
 

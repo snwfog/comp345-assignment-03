@@ -8,6 +8,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <sstream>
+#include "d20Game.h"
 #include "MapEditor.h"
 #include "ChestBuilder.h"
 #include "MapBuilder.h"
@@ -98,14 +99,15 @@ int main (int argc, const char* argv[]) {
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
+
 //    /**
 //     * MapBuilder test
 //     */
-//    MapGenerator* mg = new MapGenerator();
-//    mg->setMapBuilder(new ArenaBuilder());
-//    mg->constructMap();
-//    MapEditor* me = new MapEditor(mg->getMap());
-    
+    MapGenerator* mg = new MapGenerator();
+    mg->setMapBuilder(new ArenaBuilder());
+    mg->constructMap();
+    //MapEditor* me = new MapEditor(mg->getMap());
+    d20Game* d20g = new d20Game(mg->getMap());
     
     /**
      * CharacterBuilder test
@@ -130,6 +132,6 @@ int main (int argc, const char* argv[]) {
 //    aBully->levelUp();
 //    cout << "HP: " << aBully->getHitPoint() << endl;
 //    cout << "Attack Bonus: " << aBully->getMaxAttackBonus() << endl;
-
+    
     return 0;
 }

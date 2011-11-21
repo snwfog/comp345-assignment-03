@@ -150,20 +150,21 @@ WINDOW* MapEditor::createLegendWindow() {
     // print the legend text
     mvwprintw(pwTemp, 1, 1, " LEGEND   ");
     
-    mvwprintw(pwTemp, 3, 1, " # (w)all");
-    mvwprintw(pwTemp, 4, 1, " A (p)layer");
-    mvwprintw(pwTemp, 5, 1, " n (c)hest");
-    mvwprintw(pwTemp, 6, 1, " x (m)onster");
-    mvwprintw(pwTemp, 7, 1, " O (e)ntrace");
-    mvwprintw(pwTemp, 8, 1, " @ e(x)it");
+    mvwprintw(pwTemp, 3, 1, " # [w]all");
+    mvwprintw(pwTemp, 4, 1, " A [p]layer");
+    mvwprintw(pwTemp, 5, 1, " n [c]hest");
+    mvwprintw(pwTemp, 6, 1, " x [m]onster");
+    mvwprintw(pwTemp, 7, 1, " Y merchan[t]");
+    mvwprintw(pwTemp, 8, 1, " O [e]ntrace");
+    mvwprintw(pwTemp, 9, 1, " @ e[x]it");
     
-    mvwprintw(pwTemp, 10, 1, " (a)uto walls");
+    mvwprintw(pwTemp, 11, 1, " [a]uto walls");
     // disabled, specific of door have not been determined
     
-    mvwprintw(pwTemp, 11, 1, " (r)emove");
+    mvwprintw(pwTemp, 12, 1, " [r]emove");
     
     //mvwprintw(pwTemp, 13, 1, " (s)ave map");
-    mvwprintw(pwTemp, 14, 1, " (q)uit");
+    mvwprintw(pwTemp, 14, 1, " [q]uit");
     
     // display the legend window
     wrefresh(pwTemp);
@@ -195,6 +196,7 @@ void MapEditor::edit() {
             case 'r':
             case 'e':
             case 'x':
+            case 't':
                 addatcsr(c);
                 break;
             case 'a':
@@ -290,13 +292,13 @@ void MapEditor::refreshmap() {
 }
 
 void MapEditor::addatcsr(int c) {
-    int tmp;
+    MapObjectType tmp;
     switch (c) {
         case 'w':
-            tmp = '#'; 
+            tmp = WALL; 
             break;
         case 'p':
-            tmp = 'A';
+            tmp = PLAYER;
             // remove the old player
             for (int i = 0; i < STD_Y; i++) {
                 for (int j = 0; j < STD_X; j++) {
@@ -306,7 +308,7 @@ void MapEditor::addatcsr(int c) {
             }
             break;
         case 'e':
-            tmp = 'O';
+            tmp = ENTRANCE;
             // remove the old door
             for (int i = 0; i < STD_Y; i++) {
                 for (int j = 0; j < STD_X; j++) {
@@ -316,7 +318,7 @@ void MapEditor::addatcsr(int c) {
             }
             break;
         case 'x':
-            tmp = '@';
+            tmp = EXIT;
             // remove the old exit
             for (int i = 0; i < STD_Y; i++) {
                 for (int j = 0; j < STD_X; j++) {
@@ -326,19 +328,22 @@ void MapEditor::addatcsr(int c) {
             }
             break;
         case 'c':
-            tmp = 'o';
+            tmp = TREASURE_CHEST;
             break;
         case 'm':
-            tmp = 'x';
+            tmp = MONSTER;
             break;
         case 'r':
-            tmp = 32;
+            tmp = EMPTY;
+            break;
+        case 't':
+            tmp = MERCHANT;
             break;
         default:
-            tmp = '%';
+            tmp = EMPTY;
             break;
     }
-    pmap->setAtLocation(csr->y, csr->x, MapObject(csr->y, csr->x, static_cast<MapObjectType>(tmp)));
+    pmap->setAtLocation(csr->y, csr->x, MapObject(csr->y, csr->x, tmp));
     refreshmap();
 }
 

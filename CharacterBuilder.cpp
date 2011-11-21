@@ -8,6 +8,9 @@
 #include "CharacterBuilder.h"
 #include "Function.h"
 
+// set the ability scores of the character
+// based on the input parameter attributes
+// rank array
 void CharacterBuilder::setBaseAbilityScore(Attribute* at) {
     
     // temporary ability scores arrays
@@ -31,7 +34,7 @@ void CharacterBuilder::setBaseAbilityScore(Attribute* at) {
     character->setAbilityRanks(at);
 }
 
-void BullyBuilder::initializeCharacterType() {
+void BullyBuilder::initializeCharacter() {
     Attribute abilityRanks[] = { STR, CON, DEX, INT, CHR, WIS };
     
     character->setCharacterClass("Bully");
@@ -44,7 +47,7 @@ void BullyBuilder::initializeCharacterType() {
     character->setMaxManaPoint(character->getManaPoint());
 }
 
-void NimbleBuilder::initializeCharacterType() {
+void NimbleBuilder::initializeCharacter() {
     Attribute abilityRanks[] = { DEX, CON, STR, INT, CHR, WIS };
     
     character->setCharacterClass("Nimble");
@@ -57,7 +60,7 @@ void NimbleBuilder::initializeCharacterType() {
     character->setMaxManaPoint(character->getManaPoint());
 }
 
-void TankBuilder::initializeCharacterType() {
+void TankBuilder::initializeCharacter() {
     Attribute abilityRanks[] = { CON, DEX, STR, INT, CHR, WIS };
     
     character->setCharacterClass("Tank");
@@ -72,11 +75,11 @@ void TankBuilder::initializeCharacterType() {
 
 void FighterGenerator::createNewFighter() {
     characterBuilder->createNewCharacter();
-    characterBuilder->initializeCharacterType();
+    characterBuilder->initializeCharacter();
 }
 
 void FighterGenerator::createNewFighter(string name) {
     characterBuilder->createNewCharacter();
     characterBuilder->getCharacter()->setName(name);
-    characterBuilder->initializeCharacterType();
+    characterBuilder->initializeCharacter();
 }

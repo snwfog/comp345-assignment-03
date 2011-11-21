@@ -27,6 +27,9 @@ std::ostream& operator <<(std::ostream& os, const MapObject& object) {
         case EXIT:
             os << "@";
             break;
+        case MERCHANT:
+            os << "Y";
+            break;
         default:
             os << " "; // EMPTY
             break;
@@ -56,6 +59,9 @@ std::istream& operator >>(std::istream& is, MapObject& object) {
             break;
         case '@':
             object.mapObjectType = EXIT;
+            break;
+        case 'Y':
+            object.mapObjectType = MERCHANT;
             break;
         default:
             object.mapObjectType = EMPTY;
@@ -133,6 +139,6 @@ void Map::notify() {
     }
 }
 
-void Map::attach(Observer* ob) {
+void Map::attach(MapObserver* ob) {
     observers.push_back(ob);
 }

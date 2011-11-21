@@ -24,7 +24,7 @@ const int STD_X = 80-16;
 const int STD_Y = 25-1;
 
 // character representation of the game objects
-enum MapObjectType { EMPTY = ' ', WALL = '#', MONSTER = 'x', PLAYER = 'A', TREASURE_CHEST = 'n', ENTRANCE = 'O', EXIT = '@' };
+enum MapObjectType { EMPTY = ' ', WALL = '#', MONSTER = 'x', PLAYER = 'A', TREASURE_CHEST = 'n', ENTRANCE = 'O', EXIT = '@', MERCHANT = 'Y' };
 
 // structure to represent game objects
 struct MapObject {
@@ -42,11 +42,8 @@ struct MapObject {
 class Map;
 
 // observer abstract class
-class Observer {
+class MapObserver {
 public:
-    Observer() { };
-    ~Observer() { };
-    
     virtual void update(Map*) = 0;
 };
 
@@ -55,7 +52,7 @@ private:
     string mapname;
     int mapLevel;
     // observers vectors
-    std::vector<Observer*> observers;
+    std::vector<MapObserver*> observers;
     // map objects database
     MapObject mapObjectDatabase[STD_Y][STD_X]; 
     // helping functions
@@ -78,7 +75,7 @@ public:
     
     // function added for assignment 2
     // obeservers pattern
-    void attach(Observer*);
+    void attach(MapObserver*);
     //void detach(const Observer&);
     void notify();
 };

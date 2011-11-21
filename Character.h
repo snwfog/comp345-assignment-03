@@ -8,14 +8,17 @@
 #define CHARACTER_H
 
 #include <map>
+#include <sstream>
 #include <cmath>
 #include <string>
 #include <vector>
 #include "Item.h"
+#include "Observer.h"
 
 using std::map;
 using std::vector;
 using std::string;
+using std::stringstream;
 
 class Character {
 private:
@@ -29,6 +32,7 @@ private:
     int hitPoint, manaPoint;
     int maxHitPoint, maxManaPoint;
     int maxAttackBonus;
+    int gold;
     
     // character ability scores
     map<Attribute, int> abilityScores;
@@ -47,16 +51,19 @@ private:
     
     // other character variables
     // character observers
-    // vector<Observers*>* characterObservers;
-
+    Observer* observer;
+    
 public:
     // functions
     int attackPerRound() { return ceil(level/5); }
-    int attackBonus(int round) { return (maxAttackBonus - 5*(round - 1)); }
+    int attackBonus(int attackRound) { return (maxAttackBonus - 5*(attackRound - 1)); }
+    void giveGold(int g) { gold += g; }
+    int takeGold(int g) { gold -= g; return g; }
     
     // getters
     string getName() { return name; }
     string getCharacterClass() { return characterClass; }
+    int getGold() { return gold; }
     int getLevel() { return level; }
     int getExperience() { return experience; }
     int getExperienceToLevel() { return experienceToLevel; }
@@ -74,6 +81,7 @@ public:
     // setters
     void setName(string n) { name = n; }
     void setCharacterClass(string n) { characterClass = n; }
+    void setGold(int g) { gold = g; }
     void setLevel(int l) { level = l; }
     void setExperience(int exp) { experience = exp; }
     void setHitPoint(int hp) { hitPoint = hp; }
@@ -89,6 +97,9 @@ public:
     
     // character actions
     void levelUp();
+    
+    // observer methods
+    void attachCharacterObserver(Observer* ob) { observer = ob; }
 };
 
 #endif

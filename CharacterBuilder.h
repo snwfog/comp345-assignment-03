@@ -15,24 +15,24 @@ public:
     void createNewCharacter() { character = new Character(); }
     
     void setBaseAbilityScore(Attribute*);
-    virtual void initializeCharacterType() = 0;
+    virtual void initializeCharacter() = 0;
 protected:
     Character* character;
 };
 
 class BullyBuilder : public CharacterBuilder {
 public:
-    void initializeCharacterType();
+    void initializeCharacter();
 };
 
 class NimbleBuilder : public CharacterBuilder {
 public:
-    void initializeCharacterType();
+    void initializeCharacter();
 };
 
 class TankBuilder : public CharacterBuilder {
 public:
-    void initializeCharacterType();
+    void initializeCharacter();
 };
 
 class FighterGenerator {

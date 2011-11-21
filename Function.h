@@ -6,6 +6,7 @@
 
 #ifndef FUNCTION_H
 #define FUNCTION_H
+#include <ncurses.h>
 
 /**
  * Roll function mimicing the d20 roll syntax
@@ -17,6 +18,9 @@ int rollBaseStats();
 /**
  *  Helper functions
  */
+
+// character stats to modifier
 int toModifier(int n);
+
 
 #endif

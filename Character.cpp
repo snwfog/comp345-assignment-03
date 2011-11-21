@@ -43,7 +43,11 @@ void Character::setEquippedArmor(ArmorSlot as, Armor* am) {
         }
     }
     
-    // NOTIFY OBSEVER!!!!
+    // notify observer
+    observer->updateAbility();
+    stringstream msg;
+    msg << "You've equipped " << am->getName() << " to your " << am->getSlot() << " slot.";
+    observer->updateConsole(&msg, TRUE);
 }
 
 
@@ -84,15 +88,26 @@ Armor* Character::getEquippedArmor(ArmorSlot as) {
         }
     }
     
-    // NOTIFY OBSEVER!!!!
+    // notify observer
+    observer->updateAbility();
+    stringstream msg;
+    msg << "You've unequipped " << am->getName() << " from your " << am->getSlot() << " slot.";
+    observer->updateConsole(&msg, TRUE);
     return am;
 }
 
 void Character::levelUp() {
     setLevel(getLevel() + 1);
-    int hp = getHitPoint() + roll(10) + toModifier(getAbilityScore(CON));
+    int hp = getMaxHitPoint() + roll(10) + toModifier(getAbilityScore(CON));
     setMaxHitPoint(hp);
     setHitPoint(hp);
     setMaxAttackBonus(getMaxAttackBonus() + 1);
-    // NOTIFY OBSERVERS!
+    
+    // notify character observer
+    observer->updateBasic();
+    observer->updateVital();
+    observer->updateAbility();
+    stringstream msg;
+    msg << "**Congratulation!** You've reached level " << level << ".";
+    observer->updateConsole(&msg, TRUE);
 }

@@ -18,7 +18,7 @@ struct Cursor {
     Cursor();
 };
 
-class MapEditor : Observer {
+class MapEditor : MapObserver {
 public:
     MapEditor();
     MapEditor(Map*);
