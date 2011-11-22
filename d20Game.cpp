@@ -531,6 +531,8 @@ void d20Game::loadCharacterPanel() {
     wInventory = createWindowInventory();
     updateInventory();
     
+    // print character panel tip
+    updateConsole("Tip: Press ESC to return to the game.");
     
     bool done = FALSE;
     int c;
@@ -541,7 +543,6 @@ void d20Game::loadCharacterPanel() {
             wkill(wHelp);
         wHelp = createWindowHelp();
         updateCharacterPaneHelp();
-        updateConsole("Tip: Press ESC to return to the game.");
         
         // clean the item panel
         // kill item panel
@@ -619,6 +620,8 @@ void d20Game::start() {
     int c;
     bool quit = FALSE;
     stringstream msg;
+    // print tip
+    updateConsole("Tip: Use the arrow key to move your character!");
     while (!quit) {
         switch (c = getch()) {
             case KEY_UP:
@@ -635,8 +638,6 @@ void d20Game::start() {
                 if ((c = getch()) == 'y') {
                     quit = TRUE;
                     break;
-                } else {
-                    updateConsole("Tip: Use the arrow key to move your character!");
                 }
                 break;
             default:
@@ -787,7 +788,7 @@ void d20Game::inventoryEdit(int it) {
                     wp = static_cast<Weapon*>(item);
                     if (player->getEquippedWeapon(OFFHAND) == NULL) {
                         if (wp->getWeaponWield() == TWOHAND) {
-                            updateConsole("Error: You can only wield that weapon with your mainhand.");
+                            updateConsole("Error: You can only wield that weapon in your mainhand.");
                         } else {
                             player->equipWeaponFromInventory(OFFHAND, index);
                         }
