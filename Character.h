@@ -31,7 +31,7 @@ private:
     int experience, experienceToLevel;
     int hitPoint, manaPoint;
     int maxHitPoint, maxManaPoint;
-    int maxAttackBonus;
+    int maxAttackBonus, maxDamageBonus;
     int gold;
     
     // character ability scores
@@ -74,7 +74,7 @@ public:
     int getMaxAttackBonus() { return maxAttackBonus; }
     int getAbilityScore(Attribute at) { return abilityScores[at]; }
     Attribute* getAbilityRanks() { return abilityRank; }
-    Armor* getEquippedArmor(ArmorSlot as);
+    Armor* getEquippedArmor(ArmorSlot as) { return (equipments)[as]; }
     Weapon* getEquippedWeapon(WeaponSlot ws) { return (weapons)[ws]; }
     Item* getInventoryItem(int index) { return characterInventory[index]; }
     
@@ -91,13 +91,22 @@ public:
     void setMaxAttackBonus(int atkb) { maxAttackBonus = atkb; }
     void setAbilityScore(Attribute at, int value) { abilityScores[at] = value; }
     void setAbilityRanks(Attribute* attr) { abilityRank = attr; }
-    void setEquippedArmor(ArmorSlot as, Armor* am);
-    void setCharacterWeapon(WeaponSlot ws, Weapon* wp) { weapons[ws] = wp; }
+    void setEquippedArmor(ArmorSlot as, Armor* am) { equipments[as] = am; }
+    void setEquippedWeapon(WeaponSlot ws, Weapon* wp) { weapons[ws] = wp; }
     void setInventoryItem(int index, Item* it) { characterInventory[index] = it; }
     
     // character actions
     void levelUp();
+    void equipArmor(ArmorSlot, Armor*);
+    Armor* unequipArmor(ArmorSlot);
+    void equipWeapon(WeaponSlot, Weapon*);
+    Weapon* unequipWeapon(WeaponSlot);
     
+    // helper functions
+    // set all armors, weapons inventory to null
+    void wipeAllContainer();
+    //void wipeContainer(int it);
+    int emptyInventorySlot();
     // observer methods
     void attachCharacterObserver(Observer* ob) { observer = ob; }
 };

@@ -7,7 +7,7 @@
 #ifndef CHARACTERBUILDER_H
 #define CHARACTERBUILDER_H
 #include "Character.h"
-
+#include "ItemBuilder.h"
 
 class CharacterBuilder {
 public:

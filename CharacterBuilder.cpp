@@ -45,6 +45,19 @@ void BullyBuilder::initializeCharacter() {
     character->setMaxHitPoint(character->getHitPoint());
     character->setManaPoint(0);
     character->setMaxManaPoint(character->getManaPoint());
+    character->wipeAllContainer();
+    
+    
+    // testing gears
+    ItemGenerator* ig = new ItemGenerator();
+    ig->setArmorBuilder(new FullplateArmorBuilder());
+    ig->constructArmor("Testing Fullplate", HEAD);
+    character->setInventoryItem(0, ig->getArmor());
+    ig->setLongswordBuilder(new LongswordBuilder());
+    ig->constructLongsword("Testing Longsword", ONEHAND, MEDIUM);
+    character->setInventoryItem(1, ig->getLongsword());
+    ig->constructLongsword("Ashkandii Greater Sword", TWOHAND, BUGE);
+    character->setEquippedWeapon(MAINHAND, ig->getLongsword());
 }
 
 void NimbleBuilder::initializeCharacter() {
@@ -58,6 +71,7 @@ void NimbleBuilder::initializeCharacter() {
     character->setMaxHitPoint(character->getHitPoint());
     character->setManaPoint(0);
     character->setMaxManaPoint(character->getManaPoint());
+    character->wipeAllContainer();
 }
 
 void TankBuilder::initializeCharacter() {
@@ -71,6 +85,7 @@ void TankBuilder::initializeCharacter() {
     character->setMaxHitPoint(character->getHitPoint());
     character->setManaPoint(0);
     character->setMaxManaPoint(character->getManaPoint());
+    character->wipeAllContainer();
 }
 
 void FighterGenerator::createNewFighter() {
