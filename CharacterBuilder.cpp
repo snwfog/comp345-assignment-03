@@ -40,6 +40,7 @@ void BullyBuilder::initializeCharacter() {
     character->setCharacterClass("Bully");
     character->setLevel(1);
     character->setMaxAttackBonus(1);
+    character->setMaxDamageBonus(1);
     setBaseAbilityScore(abilityRanks);
     character->setHitPoint(roll(10) + toModifier(character->getAbilityScore(CON)));
     character->setMaxHitPoint(character->getHitPoint());
@@ -66,6 +67,7 @@ void NimbleBuilder::initializeCharacter() {
     character->setCharacterClass("Nimble");
     character->setLevel(1);
     character->setMaxAttackBonus(1);
+    character->setMaxDamageBonus(1);
     setBaseAbilityScore(abilityRanks);
     character->setHitPoint(roll(10) + toModifier(CON));
     character->setMaxHitPoint(character->getHitPoint());
@@ -80,6 +82,7 @@ void TankBuilder::initializeCharacter() {
     character->setCharacterClass("Tank");
     character->setLevel(1);
     character->setMaxAttackBonus(1);
+    character->setMaxDamageBonus(1);
     setBaseAbilityScore(abilityRanks);
     character->setHitPoint(roll(10) + toModifier(CON));
     character->setMaxHitPoint(character->getHitPoint());

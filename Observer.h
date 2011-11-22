@@ -21,6 +21,11 @@ public:
     virtual void updateVital() = 0;
     virtual void updateAbility() = 0;
     virtual void updateConsole(stringstream*, bool) = 0;
+    
+    virtual void updateWeapon() = 0;
+    virtual void updateArmor() = 0;
+    virtual void updateInventory() = 0;
+   
 };
 
 #endif

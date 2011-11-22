@@ -17,6 +17,7 @@ void LeatherArmorBuilder::buildArmor(string name, ArmorSlot slot) {
     armor->setArmor(2);
     armor->setMaxDexterity(6);
     armor->setAllStats();
+    armor->setItemType(IS_ARMOR);
     
 }
 
@@ -27,6 +28,7 @@ void ChainmailArmorBuilder::buildArmor(string name, ArmorSlot slot) {
     armor->setArmor(5);
     armor->setMaxDexterity(2);
     armor->setAllStats();
+    armor->setItemType(IS_ARMOR);
 }
 
 void FullplateArmorBuilder::buildArmor(string name, ArmorSlot slot) {
@@ -36,6 +38,7 @@ void FullplateArmorBuilder::buildArmor(string name, ArmorSlot slot) {
     armor->setArmor(8);
     armor->setMaxDexterity(1);
     armor->setAllStats();
+    armor->setItemType(IS_ARMOR);
 }
 
 void LongswordBuilder::buildLongsword(string name, WeaponWield wield, Size size) {
@@ -45,6 +48,13 @@ void LongswordBuilder::buildLongsword(string name, WeaponWield wield, Size size)
     longsword->setCost();
     longsword->setAttackBonus(roll(5));
     longsword->setDamageBonus(roll(5));
+    longsword->setItemType(IS_WEAPON);
+}
+
+void PotionBuilder::buildPotion(string name, int pool) {
+    pot->setName("Small Healing Potion");
+    pot->setPotionPool(10);
+    pot->setItemType(IS_POTION);
 }
 
 void ItemGenerator::constructArmor(string name, ArmorSlot slot) {

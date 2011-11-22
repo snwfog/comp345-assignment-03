@@ -28,7 +28,7 @@ enum Size { FINE, DIMINUTIVE, TINY, SMALL, MEDIUM, BUGE, LARGE, GARGANTUAN, COLO
 enum WeaponSlot { MAINHAND = 1, OFFHAND };
 enum WeaponWield { ONEHAND = 1, TWOHAND };
 enum Attribute { ARMOR_CLASS = 20, MAX_DEXTERITY, ARMOR_SLOT, WEAPON_WIELD, WEAPON_SLOT, SIZE, POTION_POOL, CON, STR, DEX, WIS, INT, CHR, ATTACK_BONUS, DAMAGE_BONUS, CRITICAL };
-
+enum ItemType { IS_WEAPON, IS_ARMOR, IS_POTION };
 
 std::ostream& operator <<(std::ostream& os, const ArmorSlot& s);
 std::ostream& operator <<(std::ostream& os, const WeaponSlot& s);
@@ -42,14 +42,17 @@ class Item {
 protected:
     int cost;
     string name;
+    ItemType type;
     map<Attribute, int> stats;
 public:
     int getCost() { return cost; }
     string getName() { return name; }
     map<Attribute, int> getStatsMap() { return stats; }
+    ItemType getItemType() { return type; }
     
     void setCost(int c) { cost = c; }
     void setName(string n) { name = n; }
+    void setItemType(ItemType t) { type = t; }
 };
 
 /**
@@ -84,7 +87,7 @@ public:
     int getArmor() { return armor; }
     int getMaxDexterity() { return dex; }
     ArmorSlot getSlot() { return slot; }
-    int getStats(string s);
+    int getStats(Attribute a) { return stats[a]; }
 };
 
 /**

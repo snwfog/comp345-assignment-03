@@ -51,6 +51,15 @@ public:
     void buildLongsword(string name, WeaponWield wield, Size size);
 };
 
+class PotionBuilder : public ItemBuilder {
+protected:
+    Potion* pot;
+public:
+    Potion* getPotion() { return pot; }
+    void createNewItem() { pot = new Potion(); }
+    void buildPotion(string name, int pool);
+};
+
 
 class ItemGenerator {
 public:

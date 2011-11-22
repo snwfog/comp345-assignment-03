@@ -72,6 +72,7 @@ public:
     int getMaxHitPoint() { return maxHitPoint; }
     int getMaxManaPoint() { return manaPoint; }
     int getMaxAttackBonus() { return maxAttackBonus; }
+    int getMaxDamagBonus() { return maxDamageBonus; }
     int getAbilityScore(Attribute at) { return abilityScores[at]; }
     Attribute* getAbilityRanks() { return abilityRank; }
     Armor* getEquippedArmor(ArmorSlot as) { return (equipments)[as]; }
@@ -89,10 +90,11 @@ public:
     void setMaxHitPoint(int maxhp) { maxHitPoint = maxhp; }
     void setMaxManaPoint(int maxmp) { maxManaPoint = maxmp; }
     void setMaxAttackBonus(int atkb) { maxAttackBonus = atkb; }
+    void setMaxDamageBonus(int dmgb) { maxDamageBonus = dmgb; }
     void setAbilityScore(Attribute at, int value) { abilityScores[at] = value; }
     void setAbilityRanks(Attribute* attr) { abilityRank = attr; }
-    void setEquippedArmor(ArmorSlot as, Armor* am) { equipments[as] = am; }
-    void setEquippedWeapon(WeaponSlot ws, Weapon* wp) { weapons[ws] = wp; }
+    void setEquippedArmor(ArmorSlot as, Armor* am);
+    void setEquippedWeapon(WeaponSlot ws, Weapon* wp);
     void setInventoryItem(int index, Item* it) { characterInventory[index] = it; }
     
     // character actions
@@ -102,11 +104,20 @@ public:
     void equipWeapon(WeaponSlot, Weapon*);
     Weapon* unequipWeapon(WeaponSlot);
     
+    void removeInventoryItem(int index, bool notify = TRUE);
+    void putInventoryItem(Item*, bool notify = TRUE);
+    void putToInventory(Item*, int, bool notify = TRUE);
+    void deleteInventoryItem(int);
+    void equipWeaponFromInventory(WeaponSlot ws, int inventorySlot);
+    void equipArmorFromInventory(ArmorSlot as, int inventorySlot);
     // helper functions
     // set all armors, weapons inventory to null
     void wipeAllContainer();
-    //void wipeContainer(int it);
+    void deleteEquippedArmor(ArmorSlot);
+    void deleteEquippedWeapon(WeaponSlot);
+    
     int emptyInventorySlot();
+    
     // observer methods
     void attachCharacterObserver(Observer* ob) { observer = ob; }
 };

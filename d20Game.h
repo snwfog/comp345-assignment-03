@@ -14,6 +14,7 @@
 #include "Observer.h"
 #include "Character.h"
 #include "Map.h"
+#include "Item.h"
 #include "ItemBuilder.h"
 #include "CharacterBuilder.h"
 
@@ -26,7 +27,7 @@ public:
     d20Game();
     d20Game(Map*);
     ~d20Game();
-
+    
 //private:
     Map* map;
     Character* player;
