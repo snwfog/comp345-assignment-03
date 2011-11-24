@@ -12,6 +12,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include "Map.h"
 #include "Item.h"
 #include "Observer.h"
 
@@ -53,6 +54,8 @@ private:
     // character observers
     Observer* observer;
     
+    // map coordinate
+    Coordinate coord;
 public:
     // functions
     int attackPerRound() { return ceil(level/5); }
@@ -78,6 +81,7 @@ public:
     Armor* getEquippedArmor(ArmorSlot as) { return (equipments)[as]; }
     Weapon* getEquippedWeapon(WeaponSlot ws) { return (weapons)[ws]; }
     Item* getInventoryItem(int index) { return characterInventory[index]; }
+    Coordinate getCoordinate() { return coord; }
     
     // setters
     void setName(string n) { name = n; }
@@ -96,6 +100,10 @@ public:
     void setEquippedArmor(ArmorSlot as, Armor* am);
     void setEquippedWeapon(WeaponSlot ws, Weapon* wp);
     void setInventoryItem(int index, Item* it) { characterInventory[index] = it; }
+    void setCoordinate(int y, int x) {
+        coord.y = y;
+        coord.x = x;
+    }
     
     // character actions
     void levelUp();
@@ -110,6 +118,11 @@ public:
     void deleteInventoryItem(int);
     void equipWeaponFromInventory(WeaponSlot ws, int inventorySlot);
     void equipArmorFromInventory(ArmorSlot as, int inventorySlot);
+    
+    // character check function
+    bool isDisabled() { return ((hitPoint <= 0) && (hitPoint < -10)); }
+    bool isDead() { return hitPoint <= -10; }
+    
     // helper functions
     // set all armors, weapons inventory to null
     void wipeAllContainer();

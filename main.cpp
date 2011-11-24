@@ -13,6 +13,7 @@
 #include "ChestBuilder.h"
 #include "MapBuilder.h"
 #include "CharacterBuilder.h"
+#include "d20GameBuilder.h"
 
 using namespace std;
 
@@ -107,8 +108,16 @@ int main (int argc, const char* argv[]) {
     mg->setMapBuilder(new ArenaBuilder());
     mg->constructMap();
     //MapEditor* me = new MapEditor(mg->getMap());
-    d20Game* d20g = new d20Game(mg->getMap());
-    
+    FighterGenerator* fg = new FighterGenerator();
+    fg->setCharacterBuilder(new BullyBuilder());
+    fg->createNewFighter("KittyMeow");
+
+    d20GameBuilder* gb = new d20GameBuilder();
+    gb->createNewGame();
+    gb->setStaticGameComponent(fg->getCharacter(), mg->getMap());
+    d20Game* game = gb->getGame();
+    game->start();
+
     /**
      * CharacterBuilder test
      */

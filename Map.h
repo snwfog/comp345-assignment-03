@@ -37,6 +37,13 @@ struct MapObject {
     friend std::istream& operator >>(std::istream& is, MapObject& object);
 };
 
+// structure to represent coordiante
+struct Coordinate {
+    int y, x;
+    Coordinate() : y(0), x(0) {}
+    Coordinate(int a, int b) : y(a), x(b) {}
+};
+
 
 // forward declare
 class Map;

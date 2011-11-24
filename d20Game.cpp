@@ -7,58 +7,6 @@
 #include <iostream>
 #include "d20Game.h"
 
-d20Game::d20Game(Map* m) {
-/**
- * Initialize character and map variables
- */
-    map = m;
-    FighterGenerator* fg = new FighterGenerator();
-    fg->setCharacterBuilder(new BullyBuilder());
-    fg->createNewFighter("KittyMeow");
-    player = fg->getCharacter();
-    // attach d20game as character observer
-    player->attachCharacterObserver(this);
-/**
- * Building ncurses windows
- */ 
-    // initiate basic ncurses funcs
-    initscr();
-    noecho();
-    curs_set(0);
-    raw();
-    keypad(stdscr, TRUE);
-    wclear(stdscr);
-    refresh();
-    
-    // basic character windows
-    wBasic = createWindowBasic();
-    wVital = createWindowVital();
-    wAbility = createWindowAbility();
-    wOption = createWindowOption();
-    
-    // update basic character windows
-    updateBasic();
-    updateVital();
-    updateAbility();
-    updateOption(); // static
-    
-    // console window
-    wConsole = createWindowConsole();
-    updateConsole("Tip: Use the arrow key to move your character!");
-/**
- * others initialization
- */
-    // attach combat log file
-    clog.open("combat.log");
-    
-    
-    // start the game engine
-    start();
-    
-    // end of ncurses
-    endwin();
-}
-
 /**
  * Observer/Windows/Info variables and functions
  */
@@ -379,6 +327,36 @@ void d20Game::updateItemPaneHelp() {
     wrefresh(wHelp);
 }
 
+void d20Game::updateMerchantPaneHelp() {
+    wclear(wHelp);
+    wborder(wHelp, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(wHelp);
+    
+    mvwprintw(wHelp, 1, 2, "[Merchant Help]");
+    mvwprintw(wHelp, 2, 3, "M: Access merchant's");
+    mvwprintw(wHelp, 3, 3, "   stach");
+    mvwprintw(wHelp, 4, 3, "B: Buy an item");
+    mvwprintw(wHelp, 5, 3, "S: Sell an item");
+    mvwprintw(wHelp, 6, 3, "D: Delete an item");
+    wrefresh(wHelp);
+}
+
+void d20Game::updateChestPaneHelp() {
+    wclear(wHelp);
+    wborder(wHelp, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(wHelp);
+    
+    mvwprintw(wHelp, 1, 2, "[Merchant Help]");
+    //mvwprintw(wHelp, 2, 3, "ESC: Quit item edit");
+    //mvwprintw(wHelp, 3, 3, "D: Delete item");
+    //mvwprintw(wHelp, 4, 3, "[\\d | [mohcgfbr]]:");
+    //mvwprintw(wHelp, 5, 3, "    Swap item slot");
+    
+    wrefresh(wHelp);
+}
+
+
+
 // item window
 WINDOW* d20Game::createWindowItem() {
     WINDOW* win = newwin(12, 30, 12, 50);
@@ -515,6 +493,34 @@ void d20Game::updateConsole(stringstream* sstr, bool log) {
     sstr->clear();
 }
 
+// object specific window
+WINDOW* d20Game::createWindowMerchant() {
+    WINDOW* win = newwin(12, 34, 0, 16);
+    wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    return win;
+}
+
+void d20Game::updateMerchantInventory(Merchant* merchant) {
+    wclear(wMerchantInventory);
+    wborder(wMerchantInventory, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(wMerchantInventory);
+    
+    stringstream msg;
+    mvwprintw(wMerchantInventory, 1, 2, "[Merchant]");
+
+    Item* temp;
+    // IMPORTANT HERE ONLY UPDATE 9 ITEMS FROM MERCHANT!!
+    for (int i = 0; i < merchant->size(); i++) {
+        temp = merchant->getItem(i);
+        msg << i + 1 << ": " << temp->getName();
+        mvwprintw(wMerchantInventory, i+2, 2, msg.str().c_str());
+        msg.str("");
+        msg.clear();
+    }
+    
+    wrefresh(wMerchantInventory);
+}
+
 // windows related functions
 void d20Game::wkill(WINDOW* win) {
     wborder(win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
@@ -617,33 +623,264 @@ void d20Game::killCharacterPanel() {
  * Game playing related functions
  */
 void d20Game::start() {
+    
+    // attach d20game as character observer
+    player->attachCharacterObserver(this);
+    
+    /**
+     * others initialization
+     */
+    // attach combat log file
+    clog.open("combat.log");
+
+    /**
+     * Building ncurses windows
+     */ 
+    // initiate basic ncurses funcs
+    initscr();
+    noecho();
+    curs_set(0);
+    raw();
+    keypad(stdscr, TRUE);
+    wclear(stdscr);
+    refresh();
+    
+    // basic character windows
+    wBasic = createWindowBasic();
+    wVital = createWindowVital();
+    wAbility = createWindowAbility();
+    wOption = createWindowOption();
+    
+    // update basic character windows
+    updateBasic();
+    updateVital();
+    updateAbility();
+    updateOption(); // static
+    
+    // console window
+    wConsole = createWindowConsole();
+    updateConsole("Tip: Use the arrow key to move your character!");
+    /**
+     * End of ncurses initiation
+     */
+    
+    /**
+     * Setting object coordinates based on the map
+     */
+    // getting player coordinate
+    setPlayerCoordinate();
+    
+    /**
+     * Game loop mode
+     */
     int c;
     bool quit = FALSE;
     stringstream msg;
     // print tip
     updateConsole("Tip: Use the arrow key to move your character!");
     while (!quit) {
+        // refresh map on screen
+        refreshmap();
         switch (c = getch()) {
             case KEY_UP:
             case KEY_DOWN:
             case KEY_LEFT:
             case KEY_RIGHT:
-                //move(c);
+                move(c);
                 break;
             case 'i':
                 loadCharacterPanel();
                 break;
+            case 'd':
+                interactWithEnvironment();
+                break;
+            case 's':
+                updateConsole("Error: There aren't any merchant around!");
             case 'q':
                 updateConsole("Are you sure you want to end the game? (y/n) "); 
                 if ((c = getch()) == 'y') {
                     quit = TRUE;
                     break;
+                } else {
+                    updateConsole("Tip: Use the arrow key to move your character!");
                 }
                 break;
             default:
                 break;
         }
     }
+    
+    // end of ncurses
+    endwin();
+}
+
+/**
+ * Player actions/interactions
+ */
+void d20Game::interactWithEnvironment() {
+    switch (getPrioritaryInteractableObject()) {
+        case MONSTER:
+            updateConsole("MONSTER!!!");
+            break;
+        case TREASURE_CHEST:
+            updateConsole("OPEN THE CHEST!!!");
+            break;
+        case MERCHANT:
+            interactWithMerchant();
+            break;
+        default:
+            updateConsole("Error: There aren't anything for you to interact with!");
+            break;
+    }
+}
+
+void d20Game::interactWithMerchant() {
+    // create a new merchant
+    MerchantBuilder* mb = new MerchantBuilder();
+    mb->createNewMerchant();
+    mb->fillMerchantStach();
+    Merchant* merchant = mb->getMerchant();
+    wMerchantInventory = createWindowMerchant();
+    updateMerchantInventory(mb->getMerchant());
+    wInventory = createWindowInventory();
+    updateInventory();
+    
+    wHelp = createWindowHelp();
+    updateMerchantPaneHelp();
+    
+    // print character panel tip
+    updateConsole("Tip: Press ESC to close merchant window.");
+    bool quit = FALSE;
+    int c;
+    int index;
+    stringstream msg;
+    Item* temp;
+    while (!quit) {
+        switch (c = getch()) {
+            case 27:
+                quit = TRUE;
+                break;
+            case 'm':
+                c = getch();
+                index = static_cast<int>(c - '0');
+                if (index <= 0 && index <= 9)
+                    updateItem(merchant->getItem(index));
+                else
+                    updateConsole("Error: That item doesn't exists!");
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                index = static_cast<int>(c - '0');
+                temp = player->getInventoryItem(index);
+                if (temp != NULL) {
+                    if (wItem == NULL) {
+                        wItem = createWindowItem();
+                        updateItem(temp);
+                    }
+                    switch (c = getch()) {
+                        case 'd':
+                            msg << "Permanantely delete " << temp->getName() << "? (y/n) ";
+                            updateConsole(msg.str().c_str());
+                            msg.str("");
+                            msg.clear();
+                            if ((c = getch()) == 'y') {                    
+                                msg << temp->getName() << " was permanantely deleted from your inventory.";
+                                updateConsole(msg.str().c_str(), TRUE);
+                                player->deleteInventoryItem(index);
+                                msg.str("");
+                                msg.clear();
+                            }
+                            break;
+                        case 's':
+                            msg << "Sell " << temp->getName() << " for " << temp->getCost() << " gold? (y/n) ";
+                            updateConsole(msg.str().c_str());
+                            msg.str("");
+                            msg.clear();
+                            if ((c = getch()) == 'y') {                    
+                                msg << temp->getName() << " was sold to the vendor for " << temp->getCost() << " gold.";
+                                updateConsole(msg.str().c_str(), TRUE);
+                                player->setGold(player->getGold() + temp->getCost());
+                                // permanantely remove the item
+                                player->deleteInventoryItem(index);
+                                msg.str("");
+                                msg.clear();
+                            }
+                        default:
+                            break;
+                    }
+                    // kill item panel
+                    if (wItem != NULL)
+                        wkill(wItem);
+                    wItem = NULL;
+                }
+                break;
+            default:
+                updateConsole("Error: Unrecognized command!");
+                break;
+        }
+    }
+    // clean the console
+    updateConsole("");
+    // clean the windows
+    wkill(wMerchantInventory);
+    wkill(wInventory);
+    wkill(wHelp);
+    if (wItem != NULL)
+        wkill(wItem);
+    
+    wMerchantInventory = NULL;
+    wInventory = NULL;
+    wHelp = NULL;
+    wItem = NULL;
+    
+}
+
+void d20Game::merchantInventoryEdit(int c) {
+    
+}
+
+MapObjectType d20Game::getPrioritaryInteractableObject() {
+    // check top right
+    MapObject* objectArray[8];
+    objectArray[0] = map->getAtLocation(player->getCoordinate().y - 1, player->getCoordinate().x - 1);
+    // check top
+    objectArray[1] = map->getAtLocation(player->getCoordinate().y - 1, player->getCoordinate().x);
+    // check top right
+    objectArray[2] = map->getAtLocation(player->getCoordinate().y - 1, player->getCoordinate().x + 1);
+    // check middle left 
+    objectArray[3] = map->getAtLocation(player->getCoordinate().y, player->getCoordinate().x - 1);
+    // check middle right
+    objectArray[4] = map->getAtLocation(player->getCoordinate().y, player->getCoordinate().x + 1);
+    // check bottom left
+    objectArray[5] = map->getAtLocation(player->getCoordinate().y + 1, player->getCoordinate().x - 1);
+    // check bottom
+    objectArray[6] = map->getAtLocation(player->getCoordinate().y + 1, player->getCoordinate().x);
+    // check bottom right
+    objectArray[7] = map->getAtLocation(player->getCoordinate().y + 1, player->getCoordinate().x + 1);
+    
+    for (int i = 0; i < 8; i++) {
+        switch (objectArray[i]->mapObjectType) {
+            case MONSTER:
+                return MONSTER;
+                break;
+            case TREASURE_CHEST:
+                return TREASURE_CHEST;
+                break;
+            case MERCHANT:
+                return MERCHANT;
+                break;
+            default:
+                break;
+        }
+    }
+    return EMPTY;
 }
 
 /**
@@ -685,11 +922,7 @@ void d20Game::equippedWeaponEdit(int it) {
             case '9':
             case '0':
                 index = static_cast<int>(c - '0');
-                if (player->getInventoryItem(index) == NULL) {
-                    player->putToInventory(player->unequipWeapon(ws), index);
-                } else {
-                    updateConsole("Error: Inventory slot is occupied.");
-                }
+                player->putToInventory(player->unequipWeapon(ws), index);
                 break;
             default:
                 updateConsole("Error: Unrecognized command.");
@@ -858,4 +1091,63 @@ void d20Game::inventoryEdit(int it) {
     if (wItem != NULL)
         wkill(wItem);
     wItem = NULL;
+}
+
+void d20Game::refreshmap() {
+    for (int y = 0; y < STD_Y; y++) {
+        for (int x = 0; x < STD_X; x++) {
+            mvwprintw(stdscr, y, x+16, "%c", (map->getAtLocation(y, x))->mapObjectType);
+        }
+    }
+    // refresh the cursor makes it all blinky by itself ;D
+    // mvcsr(NULL);   
+    refresh();
+}
+
+void d20Game::setPlayerCoordinate() {
+    for (int y = 0; y < STD_Y; y++)
+        for (int x = 0; x < STD_X; x++)
+            if ((map->getAtLocation(y, x))->mapObjectType == PLAYER)
+                player->setCoordinate(y, x);
+}
+
+void d20Game::move(int c) {
+    switch (c) {
+        case KEY_LEFT:
+            movePlayerPosition(player->getCoordinate().y, player->getCoordinate().x - 1);
+            break;
+        case KEY_RIGHT:
+            movePlayerPosition(player->getCoordinate().y, player->getCoordinate().x + 1);
+            break;
+        case KEY_UP:
+            movePlayerPosition(player->getCoordinate().y - 1, player->getCoordinate().x);
+            break;
+        case KEY_DOWN:
+            movePlayerPosition(player->getCoordinate().y + 1, player->getCoordinate().x);
+            break;
+        default:
+            movePlayerPosition(player->getCoordinate().y, player->getCoordinate().x);
+            break;
+    }
+}
+
+void d20Game::movePlayerPosition(int y, int x) {
+    int player_x = player->getCoordinate().x;
+    int player_y = player->getCoordinate().y;
+    // check if y and x are out of the stdscr boundaries
+    if (!(y >= STD_Y || y < 0 || x >= STD_X || x < 0)) {
+        // check if the next case is any other objects
+        if ((map->getAtLocation(y, x))->mapObjectType == EMPTY) {
+            // remove the old player location
+            (map->getAtLocation(player_y, player_x))->mapObjectType = EMPTY;
+            //mvwprintw(stdscr, player_y, player_x+16, " ");
+            // set the new player location
+            player->setCoordinate(y, x);
+            //mvwprintw(stdscr, player->get_y(), player->get_x()+16, "A");
+            //refresh();
+            // update the map info as well
+            (map->getAtLocation(y, x))->mapObjectType = PLAYER;
+            refreshmap();
+        }
+    }
 }

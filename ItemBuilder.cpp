@@ -52,10 +52,11 @@ void LongswordBuilder::buildLongsword(string name, WeaponWield wield, Size size)
 }
 
 void PotionBuilder::buildPotion(string name, int pool) {
-    pot->setName("Small Healing Potion");
-    pot->setPotionPool(10);
+    pot->setName(name);
+    pot->setPotionPool(pool);
     pot->setItemType(IS_POTION);
 }
+
 
 void ItemGenerator::constructArmor(string name, ArmorSlot slot) {
     armorBuilder->createNewItem();
@@ -65,5 +66,92 @@ void ItemGenerator::constructArmor(string name, ArmorSlot slot) {
 void ItemGenerator::constructLongsword(string name, WeaponWield wield, Size size) {
     longswordBuilder->createNewItem();
     longswordBuilder->buildLongsword(name, wield, size);
+}
+
+void ItemGenerator::constructPotion(Size s) {
+    string os;
+    int pool;
+    switch (s) {
+        case FINE:
+            os = "Fine Healing Potion";
+            pool = 3;
+            break;
+        case DIMINUTIVE:
+            os = "Diminutive Healing Potion";
+            pool = 5;
+            break;
+        case TINY:
+            os = "Tiny Healing Potion";
+            pool = 8;
+            break;
+        case SMALL:
+            os = "Small Healing Potion";
+            pool = 12;
+            break;
+        case MEDIUM:
+            os = "Medium Healing Potion";
+            pool = 17;
+            break;
+        case LARGE:
+            os = "Large Healing Potion";
+            pool = 23;
+            break;
+        case BUGE:
+            os = "Huge Healing Potion";
+            pool = 30;
+            break;
+        case GARGANTUAN:
+            os = "Gargantuan Healing Potion";
+            pool = 38;
+            break;
+        case COLOSSAL:
+            os = "Colossal Healing Potion";
+            pool = 47;
+            break;
+        default:
+            os = "Atomic Healing Potion";
+            pool = 100;
+            break;
+    }
+    potionBuilder->createNewItem();
+    potionBuilder->buildPotion(os, pool);
+}
+
+Item* ItemGenerator::getRandomItem() {
+    Item* randomItem;
+    switch (roll(3)) {
+        case 1: // armor
+            switch (roll(3)) {
+                case 1:
+                    setArmorBuilder(new LeatherArmorBuilder());
+                    constructArmor("Random Leather Armor", static_cast<ArmorSlot>(roll(6)));
+                    break;
+                case 2:
+                    setArmorBuilder(new ChainmailArmorBuilder());
+                    constructArmor("Random Chainmail Armor", static_cast<ArmorSlot>(roll(6)));
+                    break;
+                case 3:
+                    setArmorBuilder(new FullplateArmorBuilder());
+                    constructArmor("Random Fullplate Armor", static_cast<ArmorSlot>(roll(6)));
+                    break;
+                default:
+                    break;
+            }
+            randomItem = getArmor();
+            break;
+        case 2:
+            setLongswordBuilder(new LongswordBuilder());
+            constructLongsword();
+            randomItem = getLongsword();
+            break;
+        case 3:
+            setPotionBuilder(new PotionBuilder());
+            constructPotion();
+            randomItem = getPotion();
+            break;
+        default:
+            break;
+    }
+    return randomItem;
 }
 

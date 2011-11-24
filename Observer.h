@@ -25,7 +25,5 @@ public:
     virtual void updateWeapon() = 0;
     virtual void updateArmor() = 0;
     virtual void updateInventory() = 0;
-   
 };
-
 #endif

@@ -10,40 +10,38 @@
 #include <vector>
 #include <map>
 #include <fstream>
+#include <sstream>
 #include <ncurses.h>
 #include "Observer.h"
 #include "Character.h"
 #include "Map.h"
 #include "Item.h"
-#include "ItemBuilder.h"
 #include "CharacterBuilder.h"
+#include "MerchantBuilder.h"
+#include "ChestBuilder.h"
 
 using std::vector;
 using std::ofstream;
 using std::map;
+using std::stringstream;
 
 class d20Game : public Observer {
 public:
-    d20Game();
-    d20Game(Map*);
-    ~d20Game();
-    
-//private:
-    Map* map;
-    Character* player;
     // map/player getter/setter
     void setMap(Map* m) { map = m; }
     void setPlayer(Character* c) { player = c; }
     Map* getMap() { return map; }
     Character* getPlayer() { return player; }
+    //    vector<Character*> npc; // not playable characters
+    //    vector<Chest*> treasure; // treasure chests
     
-//    vector<Character*> npc; // not playable characters
-//    vector<Chest*> treasure; // treasure chests
-    
+    /**
+     * Game playing related functions
+     */
+    void start(); // start the game playing engine
     /**
      * Observer/Windows/Info variables and functions
      */
-    
     // character basic panels
     // basic window
     WINDOW* wBasic;
@@ -82,6 +80,8 @@ public:
     WINDOW* createWindowHelp();
     void updateCharacterPaneHelp();
     void updateItemPaneHelp();
+    void updateMerchantPaneHelp();
+    void updateChestPaneHelp();
     
     // item panel
     WINDOW* wItem;
@@ -94,6 +94,33 @@ public:
     void updateConsole(string, bool log = FALSE);
     void updateConsole(stringstream*, bool);
     
+    // object specific window
+    WINDOW* wMerchantInventory;
+    WINDOW* createWindowMerchant();
+    void updateMerchantInventory(Merchant*);
+    
+    WINDOW* wChest;
+    WINDOW* createWindowChest();
+    void updateChestStach() {};
+    
+    /**
+     * Map and player movement
+     */
+    void refreshmap();
+    void setPlayerCoordinate();
+    void move(int);
+    void movePlayerPosition(int, int);
+    
+    /**
+     * Objects interaction
+     */
+    // chest stash, only stored generated chest
+    vector<Chest*> chests;
+    
+private:
+    Map* map;
+    Character* player;
+    
     // items related actions
     void equippedWeaponEdit(int);
     void equippedArmorEdit(int);
@@ -105,11 +132,15 @@ public:
     void loadCharacterPanel();
     void killCharacterPanel();
     
-
     /**
-     * Game playing related functions
+     * Player actions/interactions
      */
-    void start(); // start the game playing engine
+    void interactWithEnvironment();
+    MapObjectType getPrioritaryInteractableObject();
+    void interactWithMerchant();
+    // edit player inventory at merchant
+    void merchantInventoryEdit(int);
+    
     
     /**
      * Others
@@ -117,8 +148,6 @@ public:
     // combat log file
     ofstream clog;
     ItemGenerator* ig;
-    
-
 };
 
 #endif

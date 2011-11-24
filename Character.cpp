@@ -232,7 +232,7 @@ Weapon* Character::unequipWeapon(WeaponSlot ws) {
     }
     
     stringstream msg;
-    msg << "You've unequipped " << am->getName() << "from your " << ws << ".";
+    msg << "You've unequipped " << am->getName() << " from your " << ws << ".";
     observer->updateConsole(&msg, TRUE);
     // set the equip slot to NULL
     weapons[ws] = NULL;
@@ -273,7 +273,6 @@ void Character::wipeAllContainer() {
     equipments[HANDS] = NULL;
     equipments[FEET] = NULL;
     equipments[WAIST] = NULL;
-    equipments[WRIST] = NULL;
     equipments[FINGER] = NULL;
     
     // weapons
@@ -322,32 +321,35 @@ void Character::deleteInventoryItem(int index) {
     removeInventoryItem(index, TRUE);
 }
 
+// specify index before storing
 void Character::putToInventory(Item* it, int index, bool notify) {
-    characterInventory[index] = it;
-    
     stringstream msg;
+    bool success = FALSE;
     // notify observer
+    if (characterInventory[index] == NULL) {
+        characterInventory[index] = it;
+        success = TRUE;
+    }
+
     if (notify) {
-        msg << "You've gained " << it->getName() << ".";
-        observer->updateConsole(&msg, TRUE);
-        observer->updateInventory();
+        if (success) {
+            msg << "You've stored " << it->getName() << " in your inventory.";
+            observer->updateConsole(&msg, TRUE);
+            observer->updateInventory();
+        } else {
+            msg << "Error: Your inventory is full!";
+            observer->updateConsole(&msg, FALSE);
+        }
     }
 }
 
+// auto store item in inventory
 void Character::putInventoryItem(Item* it, bool notify) {
     for (int i = 0; i < 10; i++) {
         if (characterInventory[i] == NULL) {
-            characterInventory[i] = it;
+            putToInventory(it, i, notify);
             break;
         }
-    }
-    
-    stringstream msg;
-    // notify observer
-    if (notify) {
-        msg << "You've gained " << it->getName() << ".";
-        observer->updateConsole(&msg, TRUE);
-        observer->updateInventory();
     }
 }
 

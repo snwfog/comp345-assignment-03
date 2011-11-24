@@ -28,9 +28,6 @@ std::ostream& operator <<(std::ostream& os, const ArmorSlot& s) {
         case WAIST:
             os << "Waist";
             break;
-        case WRIST:
-            os << "Mainhand";
-            break;
         case FINGER:
             os << "Finger";
             break;
@@ -114,9 +111,6 @@ void Armor::setAllStats() {
             setStats(INT, roll(5));
             setStats(WIS, roll(5));
             break;
-        case WRIST:
-            setStats(STR, roll(5));
-            break;
         case FEET:
             setStats(DEX, roll(5));
             break;
@@ -133,6 +127,11 @@ void Armor::setAllStats() {
         default:
             break;
     }
+}
+
+void Weapon::setAllStats() {
+    setAttackBonus(roll(10));
+    setDamageBonus(roll(10));
 }
 
 void Longsword::setCost() {

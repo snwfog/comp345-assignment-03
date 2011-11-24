@@ -23,8 +23,8 @@ using std::map;
 /**
  * Enumerations
  */
-enum ArmorSlot { HEAD = 1, CHEST, HANDS, FEET, WAIST, WRIST, FINGER };
-enum Size { FINE, DIMINUTIVE, TINY, SMALL, MEDIUM, BUGE, LARGE, GARGANTUAN, COLOSSAL};
+enum ArmorSlot { HEAD = 1, CHEST, HANDS, FEET, WAIST, FINGER };
+enum Size { FINE = 1, DIMINUTIVE, TINY, SMALL, MEDIUM, LARGE, BUGE, GARGANTUAN, COLOSSAL};
 enum WeaponSlot { MAINHAND = 1, OFFHAND };
 enum WeaponWield { ONEHAND = 1, TWOHAND };
 enum Attribute { ARMOR_CLASS = 20, MAX_DEXTERITY, ARMOR_SLOT, WEAPON_WIELD, WEAPON_SLOT, SIZE, POTION_POOL, CON, STR, DEX, WIS, INT, CHR, ATTACK_BONUS, DAMAGE_BONUS, CRITICAL };
@@ -132,6 +132,8 @@ public:
         damageBonus = db;
         stats[DAMAGE_BONUS] = db;
     }
+    
+    void setAllStats();
     
     virtual void setCost() = 0;
     

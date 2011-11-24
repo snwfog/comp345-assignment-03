@@ -8,10 +8,11 @@
 
 #ifndef ITEMBUILDER_H
 #define ITEMBUILDER_H
-
+#include <sstream>
 #include <string>
 #include "Item.h"
 using std::string;
+using std::stringstream;
 
 class ItemBuilder {
 public:
@@ -29,17 +30,17 @@ protected:
 
 class LeatherArmorBuilder : public ArmorBuilder {
 public:
-    void buildArmor(string name, ArmorSlot slot);
+    void buildArmor(string name = "Random Leather Armor", ArmorSlot slot = static_cast<ArmorSlot>(roll(6)));
 };
 
 class ChainmailArmorBuilder : public ArmorBuilder {
 public:
-    void buildArmor(string name, ArmorSlot slot);
+    void buildArmor(string name = "Random Chainmail Armor", ArmorSlot slot = static_cast<ArmorSlot>(roll(6)));
 };
 
 class FullplateArmorBuilder : public ArmorBuilder {
 public:
-    void buildArmor(string name, ArmorSlot slot);
+    void buildArmor(string name = "Random Fullplate Armor", ArmorSlot slot = static_cast<ArmorSlot>(roll(6)));
 };
 
 class LongswordBuilder : public ItemBuilder {
@@ -60,7 +61,6 @@ public:
     void buildPotion(string name, int pool);
 };
 
-
 class ItemGenerator {
 public:
     // armor builder
@@ -71,11 +71,20 @@ public:
     // longsword builder
     void setLongswordBuilder(LongswordBuilder* lsb) { longswordBuilder = lsb; }
     Longsword* getLongsword() { return longswordBuilder->getWeapon(); }
-    void constructLongsword(string name, WeaponWield wield, Size size);
+    void constructLongsword(string name = "Random Longsword", WeaponWield wield = static_cast<WeaponWield>(roll(2)), Size size = static_cast<Size>(roll(4, 1, 3)));
+    
+    // potion builder
+    void setPotionBuilder(PotionBuilder* pb) { potionBuilder = pb; }
+    Potion* getPotion() { return potionBuilder->getPotion(); }
+    void constructPotion(Size s = static_cast<Size>(roll(4, 1, 3))); // between small to huge
+    
+    // random item builder
+    Item* getRandomItem();
     
 private:
     ArmorBuilder* armorBuilder;
     LongswordBuilder* longswordBuilder;
+    PotionBuilder* potionBuilder;
     
 };
 
