@@ -51,8 +51,9 @@ void LongswordBuilder::buildLongsword(string name, WeaponWield wield, Size size)
     longsword->setItemType(IS_WEAPON);
 }
 
-void PotionBuilder::buildPotion(string name, int pool) {
+void PotionBuilder::buildPotion(string name, int pool, int cost) {
     pot->setName(name);
+    pot->setCost(cost);
     pot->setPotionPool(pool);
     pot->setItemType(IS_POTION);
 }
@@ -71,50 +72,61 @@ void ItemGenerator::constructLongsword(string name, WeaponWield wield, Size size
 void ItemGenerator::constructPotion(Size s) {
     string os;
     int pool;
+    int cost;
     switch (s) {
         case FINE:
             os = "Fine Healing Potion";
             pool = 3;
+            cost = 1;
             break;
         case DIMINUTIVE:
             os = "Diminutive Healing Potion";
             pool = 5;
+            cost = 3;
             break;
         case TINY:
             os = "Tiny Healing Potion";
             pool = 8;
+            cost = 5;
             break;
         case SMALL:
             os = "Small Healing Potion";
             pool = 12;
+            cost = 10;
             break;
         case MEDIUM:
             os = "Medium Healing Potion";
             pool = 17;
+            cost = 15;
             break;
         case LARGE:
             os = "Large Healing Potion";
             pool = 23;
+            cost = 18;
             break;
         case BUGE:
             os = "Huge Healing Potion";
             pool = 30;
+            cost = 23;
             break;
         case GARGANTUAN:
             os = "Gargantuan Healing Potion";
             pool = 38;
+            cost = 30;
             break;
         case COLOSSAL:
             os = "Colossal Healing Potion";
             pool = 47;
+            cost = 45;
             break;
         default:
             os = "Atomic Healing Potion";
             pool = 100;
+            cost = 100;
             break;
     }
     potionBuilder->createNewItem();
-    potionBuilder->buildPotion(os, pool);
+    potionBuilder->buildPotion(os, pool, cost);
 }
 
 Item* ItemGenerator::getRandomItem() {

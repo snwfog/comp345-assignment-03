@@ -58,7 +58,7 @@ protected:
 public:
     Potion* getPotion() { return pot; }
     void createNewItem() { pot = new Potion(); }
-    void buildPotion(string name, int pool);
+    void buildPotion(string name, int pool, int cost);
 };
 
 class ItemGenerator {
