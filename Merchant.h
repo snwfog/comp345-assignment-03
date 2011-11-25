@@ -10,6 +10,7 @@
 #include <vector>
 #include "Item.h"
 #include "Observer.h"
+#include "ItemBuilder.h"
 using std::vector;
 
 class Merchant {
@@ -25,6 +26,13 @@ public:
     }
     
     Item* getItem(int index) {
+        ItemGenerator* ig = new ItemGenerator();
+        Item* item = merchantStach[index];
+        merchantStach[index] = ig->getRandomItem();
+        return item;
+    }
+    
+    Item* peek(int index) {
         return merchantStach[index];
     }
     
@@ -33,7 +41,7 @@ public:
     }
     
     void deleteItem(int index) {
-        delete merchantStach[index];
+        //delete merchantStach[index];
         merchantStach[index] = NULL;
     }
     

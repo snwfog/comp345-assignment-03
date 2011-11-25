@@ -35,6 +35,9 @@ struct MapObject {
     MapObject(int, int, MapObjectType);
     friend std::ostream& operator <<(std::ostream& os, const MapObject& object);
     friend std::istream& operator >>(std::istream& is, MapObject& object);
+    friend bool operator ==(const MapObject& a, const MapObject& b) {
+        return (a.y == b.y) && (a.x == b.x) && (a.mapObjectType == b.mapObjectType);
+    }
 };
 
 // structure to represent coordiante
@@ -42,6 +45,9 @@ struct Coordinate {
     int y, x;
     Coordinate() : y(0), x(0) {}
     Coordinate(int a, int b) : y(a), x(b) {}
+    friend bool operator ==(Coordinate& a, Coordinate& b) {
+        return (a.x == b.x) && (a.y == b.y);
+    }
 };
 
 

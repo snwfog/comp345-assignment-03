@@ -347,9 +347,9 @@ void d20Game::updateChestPaneHelp() {
     wrefresh(wHelp);
     
     mvwprintw(wHelp, 1, 2, "[Merchant Help]");
-    //mvwprintw(wHelp, 2, 3, "ESC: Quit item edit");
-    //mvwprintw(wHelp, 3, 3, "D: Delete item");
-    //mvwprintw(wHelp, 4, 3, "[\\d | [mohcgfbr]]:");
+    mvwprintw(wHelp, 2, 3, "C: Access chest's");
+    mvwprintw(wHelp, 3, 3, "   stach");
+    mvwprintw(wHelp, 4, 3, "T: Take an item");
     //mvwprintw(wHelp, 5, 3, "    Swap item slot");
     
     wrefresh(wHelp);
@@ -511,7 +511,7 @@ void d20Game::updateMerchantInventory(Merchant* merchant) {
     Item* temp;
     // IMPORTANT HERE ONLY UPDATE 9 ITEMS FROM MERCHANT!!
     for (int i = 0; i < merchant->size(); i++) {
-        temp = merchant->getItem(i);
+        temp = merchant->peek(i);
         msg << i + 1 << ": " << temp->getName();
         mvwprintw(wMerchantInventory, i+2, 2, msg.str().c_str());
         msg.str("");
@@ -520,6 +520,42 @@ void d20Game::updateMerchantInventory(Merchant* merchant) {
     
     wrefresh(wMerchantInventory);
 }
+
+// object specific window
+WINDOW* d20Game::createWindowChest() {
+    WINDOW* win = newwin(12, 34, 0, 16);
+    wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    return win;
+}
+
+void d20Game::updateChestStach(Chest* chest) {
+    wclear(wChest);
+    wborder(wChest, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(wChest);
+    
+    stringstream msg;
+    mvwprintw(wChest, 1, 2, "[Chest]");
+    
+    Item* temp;
+    // IMPORTANT HERE ONLY UPDATE 9 ITEMS FROM MERCHANT!!
+    for (int i = 0; i < chest->size(); i++) {
+        temp = chest->peek(i);
+        if (temp != NULL) {
+            msg << i + 1 << ": " << temp->getName();
+            mvwprintw(wChest, i+2, 2, msg.str().c_str());
+            msg.str("");
+            msg.clear();
+        } else {
+            msg << i + 1 << ": - ";
+            mvwprintw(wChest, i+2, 2, msg.str().c_str());
+            mvwprintw(wChest, i+2, 2, msg.str().c_str());
+            msg.str("");
+            msg.clear();
+        }
+    }
+    wrefresh(wChest);
+}
+
 
 // windows related functions
 void d20Game::wkill(WINDOW* win) {
@@ -670,6 +706,16 @@ void d20Game::start() {
     // getting player coordinate
     setPlayerCoordinate();
     
+    // generating all chests
+//    ChestGenerator* cg = new ChestGenerator();
+//    cg->setChestBuilder(new ChestBuilder());
+//    for (int y = 0; y < STD_Y; y++) {
+//        for (int x = 0; x < STD_X; x++) {
+//            cg->constructChest(new Coordinate(y, x));
+//            chests.push_back(cg->getChest());
+//        }
+//    }
+    
     /**
      * Game loop mode
      */
@@ -718,12 +764,12 @@ void d20Game::start() {
  * Player actions/interactions
  */
 void d20Game::interactWithEnvironment() {
-    switch (getPrioritaryInteractableObject()) {
+    switch (getPrioritaryInteractableObject()->mapObjectType) {
         case MONSTER:
             updateConsole("MONSTER!!!");
             break;
         case TREASURE_CHEST:
-            updateConsole("OPEN THE CHEST!!!");
+            interactWithChest();
             break;
         case MERCHANT:
             interactWithMerchant();
@@ -761,12 +807,24 @@ void d20Game::interactWithMerchant() {
                 quit = TRUE;
                 break;
             case 'm':
+                updateConsole("Tip: Press 1 to 9 to view an item.");
                 c = getch();
-                index = static_cast<int>(c - '0');
-                if (index <= 0 && index <= 9)
-                    updateItem(merchant->getItem(index));
-                else
+                index = static_cast<int>(c - '0') - 1;
+                if (index >= 0 && index <= 8) {
+                    updateConsole("Tip: Press [B] to buy this item.");
+                    if (wItem != NULL)
+                        wkill(wItem);
+                    wItem = createWindowItem();
+                    updateItem(merchant->peek(index));
+                    if ((c = getch()) == 'b') {
+                        player->buy(merchant, index);
+                        updateMerchantInventory(merchant);
+                    } else {
+                        updateConsole("Error: Trade cancelled.");
+                    }
+                } else
                     updateConsole("Error: That item doesn't exists!");
+                break;
             case '0':
             case '1':
             case '2':
@@ -786,16 +844,18 @@ void d20Game::interactWithMerchant() {
                     }
                     switch (c = getch()) {
                         case 'd':
-                            msg << "Permanantely delete " << temp->getName() << "? (y/n) ";
+                            msg << "Permanently delete " << temp->getName() << "? (y/n) ";
                             updateConsole(msg.str().c_str());
                             msg.str("");
                             msg.clear();
                             if ((c = getch()) == 'y') {                    
-                                msg << temp->getName() << " was permanantely deleted from your inventory.";
+                                msg << temp->getName() << " was permanently deleted from your inventory.";
                                 updateConsole(msg.str().c_str(), TRUE);
                                 player->deleteInventoryItem(index);
                                 msg.str("");
                                 msg.clear();
+                            } else {
+                                updateConsole("Error: Delete unsuccessful.");
                             }
                             break;
                         case 's':
@@ -804,14 +864,11 @@ void d20Game::interactWithMerchant() {
                             msg.str("");
                             msg.clear();
                             if ((c = getch()) == 'y') {                    
-                                msg << temp->getName() << " was sold to the vendor for " << temp->getCost() << " gold.";
-                                updateConsole(msg.str().c_str(), TRUE);
-                                player->setGold(player->getGold() + temp->getCost());
-                                // permanantely remove the item
-                                player->deleteInventoryItem(index);
-                                msg.str("");
-                                msg.clear();
+                                player->sell(index);
+                            } else {
+                                updateConsole("Error: Delete unsuccessful.");
                             }
+                            break;
                         default:
                             break;
                     }
@@ -819,13 +876,19 @@ void d20Game::interactWithMerchant() {
                     if (wItem != NULL)
                         wkill(wItem);
                     wItem = NULL;
+                } else {
+                    updateConsole("Error: That item does not exists!");
                 }
                 break;
             default:
                 updateConsole("Error: Unrecognized command!");
                 break;
         }
+        if (wItem != NULL)
+            wkill(wItem);
+        wItem = NULL;
     }
+    
     // clean the console
     updateConsole("");
     // clean the windows
@@ -842,11 +905,150 @@ void d20Game::interactWithMerchant() {
     
 }
 
-void d20Game::merchantInventoryEdit(int c) {
+void d20Game::interactWithChest() {
+    // on first interaction, check first if 
+    // this chest is already generated
+    Chest* chest = NULL;
+    MapObject* chestObject = getPrioritaryInteractableObject();
+    Coordinate* currentChestCoordinate;
+    for (int i = 0; i < chests.size(); i++) {
+        if (chests[i]->getNumberOfItem() != 0) { // if the chest still has items
+            currentChestCoordinate = chests[i]->getCoordinate();
+            if (currentChestCoordinate->y == chestObject->y && currentChestCoordinate->x == chestObject->x) {
+                chest = chests[i];
+            }
+        }
+    }
     
+    // if couldnt located already generated chest
+    // then generates a new chest
+    if (chest == NULL) {
+        ChestGenerator* cg = new ChestGenerator();
+        cg->setChestBuilder(new ChestBuilder());
+        cg->constructChest(new Coordinate(chestObject->y, chestObject->x));
+        chests.push_back(cg->getChest());
+        chest = cg->getChest();
+        currentChestCoordinate = new Coordinate(chestObject->y, chestObject->x);        
+    }
+
+    wChest = createWindowChest();
+    updateChestStach(chest);
+    wInventory = createWindowInventory();
+    updateInventory();
+    
+    wHelp = createWindowHelp();
+    updateChestPaneHelp();
+    
+    // print character panel tip
+    //updateConsole("Tip: [C]hest to access chest contents.");
+    stringstream msg;
+    bool quit = FALSE;
+    int c;
+    int index;
+
+    Item* temp;
+    while (!quit) {
+        switch (c = getch()) {
+            case 27:
+                quit = TRUE;
+                break;
+            case 'c':
+                updateConsole("Tip: Press a number to view the item.");
+                c = getch();
+                index = static_cast<int>(c - '0') - 1;
+                if (index >= 0 && index <= chest->size()) {
+                    if (chest->peek(index) != NULL) {
+                        updateConsole("Tip: Press [T] to take this item from the chest.");
+                        if (wItem != NULL)
+                            wkill(wItem);
+                        wItem = createWindowItem();
+                        updateItem(chest->peek(index));
+                        if ((c = getch()) == 't') {
+                            player->putInventoryItem(chest->getItem(index));
+                            if (chest->getNumberOfItem() == 0) {
+                                quit = TRUE;
+                                map->setAtLocation(currentChestCoordinate->y, currentChestCoordinate->x, MapObject(currentChestCoordinate->y, currentChestCoordinate->x, EMPTY));   
+                            }
+                            updateChestStach(chest);
+                        } else {
+                            updateConsole("Error: You have not take anything from the chest.");
+                        }
+                    } else {
+                        updateConsole("Error: That item does not exists!");
+                    }
+                } else
+                    updateConsole("Error: That item doesn't exists!");
+                break;
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                index = static_cast<int>(c - '0');
+                temp = player->getInventoryItem(index);
+                if (temp != NULL) {
+                    if (wItem == NULL) {
+                        wItem = createWindowItem();
+                        updateItem(temp);
+                    }
+                    switch (c = getch()) {
+                        case 'd':
+                            msg << "Permanently delete " << temp->getName() << "? (y/n) ";
+                            updateConsole(msg.str().c_str());
+                            msg.str("");
+                            msg.clear();
+                            if ((c = getch()) == 'y') {                    
+                                msg << temp->getName() << " was permanently deleted from your inventory.";
+                                updateConsole(msg.str().c_str(), TRUE);
+                                player->deleteInventoryItem(index);
+                                msg.str("");
+                                msg.clear();
+                            } else {
+                                updateConsole("Error: Delete unsuccessful.");
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    // kill item panel
+                    if (wItem != NULL)
+                        wkill(wItem);
+                    wItem = NULL;
+                } else {
+                    updateConsole("Error: That item does not exists!");
+                }
+                break;
+            default:
+                updateConsole("Error: Unrecognized command!");
+                break;
+        }
+        if (wItem != NULL)
+            wkill(wItem);
+        wItem = NULL;
+    }
+    
+    
+    // clean the console
+    updateConsole("");
+    // clean the windows
+    wkill(wChest);
+    wkill(wInventory);
+    wkill(wHelp);
+    if (wItem != NULL)
+        wkill(wItem);
+    
+    wChest = NULL;
+    wInventory = NULL;
+    wHelp = NULL;
+    wItem = NULL;
 }
 
-MapObjectType d20Game::getPrioritaryInteractableObject() {
+MapObject* d20Game::getPrioritaryInteractableObject() {
     // check top right
     MapObject* objectArray[8];
     objectArray[0] = map->getAtLocation(player->getCoordinate().y - 1, player->getCoordinate().x - 1);
@@ -868,19 +1070,19 @@ MapObjectType d20Game::getPrioritaryInteractableObject() {
     for (int i = 0; i < 8; i++) {
         switch (objectArray[i]->mapObjectType) {
             case MONSTER:
-                return MONSTER;
+                return objectArray[i];
                 break;
             case TREASURE_CHEST:
-                return TREASURE_CHEST;
+                return objectArray[i];
                 break;
             case MERCHANT:
-                return MERCHANT;
+                return objectArray[i];
                 break;
             default:
                 break;
         }
     }
-    return EMPTY;
+    return new MapObject(-1, -1, EMPTY);
 }
 
 /**
@@ -1068,12 +1270,12 @@ void d20Game::inventoryEdit(int it) {
                 
             // handle for deleting an inventory
             case 'd':
-                msg << "Permanantely delete: " << item->getName() << "? (y/n) ";
+                msg << "Permanently delete " << item->getName() << "? (y/n) ";
                 updateConsole(msg.str().c_str());
                 msg.str("");
                 msg.clear();
                 if ((c = getch()) == 'y') {                    
-                    msg << item->getName() << " was permanantely delete from your inventory.";
+                    msg << item->getName() << " was permanently delete from your inventory.";
                     updateConsole(msg.str().c_str(), TRUE);
                     player->deleteInventoryItem(index);
                     msg.str("");

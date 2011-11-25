@@ -13,6 +13,7 @@
 #include <vector>
 #include "Item.h"
 #include "Observer.h"
+#include "Map.h"
 
 using std::vector;
 
@@ -23,9 +24,17 @@ public:
     // http://stackoverflow.com/questions/409348/iteration-over-vector-in-c
     void putItem(Item* item) {
         chestContainer.push_back(item);
+        numberOfItem++;
     }
     
     Item* getItem(int index) {
+        Item* item = chestContainer[index];
+        removeItem(index);
+        numberOfItem--;
+        return item;
+    }
+    
+    Item* peek(int index) {
         return chestContainer[index];
     }
     
@@ -34,9 +43,15 @@ public:
     }
     
     void deleteItem(int index) {
-        delete chestContainer[index];
+        //delete chestContainer[index];
         chestContainer[index] = NULL;
     }
+    
+    int getNumberOfItem() { return numberOfItem; }
+    
+    void setCoordinate(Coordinate* c) { chestCoordinate = c; }
+    
+    Coordinate* getCoordinate() { return chestCoordinate; }
     
     vector<Item*> getStach() {  return chestContainer; }
     
@@ -47,7 +62,9 @@ public:
     
 private:
     vector<class Item*> chestContainer;
+    Coordinate* chestCoordinate;
     Observer* observer;
+    int numberOfItem;
 };
 
 #endif

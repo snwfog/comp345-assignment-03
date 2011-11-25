@@ -12,7 +12,7 @@ public:
     Chest* getChest() { return chest; }
     void createNewChest() { chest = new Chest(); }
     void putItem(Item* it) { chest->putItem(it); }
-    
+    void setCoordinate(Coordinate* c) { chest->setCoordinate(c); }
 private:
     Chest* chest;
 };
@@ -20,6 +20,7 @@ private:
 class ChestGenerator {
 public:
     void constructChest();
+    void constructChest(Coordinate*);
     void setChestBuilder(ChestBuilder* cb) { chestBuilder = cb; }
     Chest* getChest() { return chestBuilder->getChest(); }
     

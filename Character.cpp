@@ -317,8 +317,9 @@ void Character::removeInventoryItem(int index, bool notify) {
 }
 
 void Character::deleteInventoryItem(int index) {
-    delete characterInventory[index];
+    //delete characterInventory[index];
     removeInventoryItem(index, TRUE);
+    
 }
 
 // specify index before storing
@@ -336,9 +337,10 @@ void Character::putToInventory(Item* it, int index, bool notify) {
             msg << "You've stored " << it->getName() << " in your inventory.";
             observer->updateConsole(&msg, TRUE);
             observer->updateInventory();
+            msg.str("");
+            msg.clear();
         } else {
-            msg << "Error: Your inventory is full!";
-            observer->updateConsole(&msg, FALSE);
+            observer->updateConsole("Error: Your inventory is full!", FALSE);
         }
     }
 }
@@ -351,6 +353,27 @@ void Character::putInventoryItem(Item* it, bool notify) {
             break;
         }
     }
+}
+
+void Character::buy(Merchant* merchant, int index) {
+    if (gold >= merchant->peek(index)->getCost()) {
+        gold -= merchant->peek(index)->getCost();
+        putInventoryItem(merchant->getItem(index));
+    } else {
+        observer->updateConsole("Error: You cannot afford that item!", FALSE);
+    }
+}
+
+void Character::sell(int index) {
+    stringstream msg;
+    msg << (characterInventory[index])->getName() << " was sold to the vendor for " << (characterInventory[index])->getCost() << " gold.";
+    gold += characterInventory[index]->getCost();
+    // permanently remove the item
+    deleteInventoryItem(index);
+    
+    observer->updateConsole(msg.str().c_str(), TRUE);
+    msg.str("");
+    msg.clear();
 }
 
 

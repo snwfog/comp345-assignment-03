@@ -11,6 +11,7 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <ncurses.h>
 #include "Observer.h"
 #include "Character.h"
@@ -24,6 +25,7 @@ using std::vector;
 using std::ofstream;
 using std::map;
 using std::stringstream;
+using std::string;
 
 class d20Game : public Observer {
 public:
@@ -92,7 +94,7 @@ public:
     WINDOW* wConsole;
     WINDOW* createWindowConsole();
     void updateConsole(string, bool log = FALSE);
-    void updateConsole(stringstream*, bool);
+    void updateConsole(stringstream*, bool log = FALSE);
     
     // object specific window
     WINDOW* wMerchantInventory;
@@ -101,7 +103,7 @@ public:
     
     WINDOW* wChest;
     WINDOW* createWindowChest();
-    void updateChestStach() {};
+    void updateChestStach(Chest*);
     
     /**
      * Map and player movement
@@ -136,10 +138,10 @@ private:
      * Player actions/interactions
      */
     void interactWithEnvironment();
-    MapObjectType getPrioritaryInteractableObject();
+    MapObject* getPrioritaryInteractableObject();
     void interactWithMerchant();
     // edit player inventory at merchant
-    void merchantInventoryEdit(int);
+    void interactWithChest();
     
     
     /**

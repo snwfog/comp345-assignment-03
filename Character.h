@@ -15,6 +15,7 @@
 #include "Map.h"
 #include "Item.h"
 #include "Observer.h"
+#include "Merchant.h"
 
 using std::map;
 using std::vector;
@@ -130,6 +131,10 @@ public:
     void deleteEquippedWeapon(WeaponSlot);
     
     int emptyInventorySlot();
+    
+    // merchant related actions
+    void buy(Merchant*, int);
+    void sell(int);
     
     // observer methods
     void attachCharacterObserver(Observer* ob) { observer = ob; }

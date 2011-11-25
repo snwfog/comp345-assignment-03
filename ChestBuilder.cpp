@@ -15,3 +15,13 @@ void ChestGenerator::constructChest() {
         chestBuilder->putItem(ig->getRandomItem());
     }
 }
+
+void ChestGenerator::constructChest(Coordinate* c) {
+    chestBuilder->createNewChest();
+    ItemGenerator* ig = new ItemGenerator();
+    int itemCount = roll(3, 1, 2);
+    for (int i = 0; i < itemCount; i++) {
+        chestBuilder->putItem(ig->getRandomItem());
+    }
+    chestBuilder->setCoordinate(c);
+}
