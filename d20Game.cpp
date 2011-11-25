@@ -725,34 +725,42 @@ void d20Game::start() {
     // print tip
     updateConsole("Tip: Use the arrow key to move your character!");
     while (!quit) {
-        // refresh map on screen
-        refreshmap();
-        switch (c = getch()) {
-            case KEY_UP:
-            case KEY_DOWN:
-            case KEY_LEFT:
-            case KEY_RIGHT:
-                move(c);
-                break;
-            case 'i':
-                loadCharacterPanel();
-                break;
-            case 'd':
-                interactWithEnvironment();
-                break;
-            case 's':
-                updateConsole("Error: There aren't any merchant around!");
-            case 'q':
-                updateConsole("Are you sure you want to end the game? (y/n) "); 
-                if ((c = getch()) == 'y') {
-                    quit = TRUE;
+        // check player location see if it is at the exit
+        Coordinate playerCoord = player->getCoordinate();
+        if (map->getAtLocation(playerCoord.y, playerCoord.x)->mapObjectType != EXIT) {
+            // refresh map on screen
+            refreshmap();
+            switch (c = getch()) {
+                case KEY_UP:
+                case KEY_DOWN:
+                case KEY_LEFT:
+                case KEY_RIGHT:
+                    move(c);
                     break;
-                } else {
-                    updateConsole("Tip: Use the arrow key to move your character!");
-                }
-                break;
-            default:
-                break;
+                case 'i':
+                    loadCharacterPanel();
+                    break;
+                case 'd':
+                    interactWithEnvironment();
+                    break;
+                case 's':
+                    updateConsole("Error: There aren't any merchant around!");
+                case 'q':
+                    updateConsole("Are you sure you want to end the game? (y/n) "); 
+                    if ((c = getch()) == 'y') {
+                        quit = TRUE;
+                        break;
+                    } else {
+                        updateConsole("Tip: Use the arrow key to move your character!");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            quit = TRUE;
+            // save the character
+            // do exit callings
         }
     }
     
@@ -1349,6 +1357,13 @@ void d20Game::movePlayerPosition(int y, int x) {
             //refresh();
             // update the map info as well
             (map->getAtLocation(y, x))->mapObjectType = PLAYER;
+            refreshmap();
+        } else if ((map->getAtLocation(y, x))->mapObjectType == EXIT) {
+            // remove the old player location
+            (map->getAtLocation(player_y, player_x))->mapObjectType = EMPTY;
+            //mvwprintw(stdscr, player_y, player_x+16, " ");
+            // set the new player location
+            player->setCoordinate(y, x);
             refreshmap();
         }
     }
