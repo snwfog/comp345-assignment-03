@@ -142,7 +142,7 @@ public:
     WeaponWield getWeaponWield() { return wield; }
     int getAttackBonus() { return attackBonus; }
     int getDamageBonus() { return damageBonus; }
-    
+    int getSizeModifier();    
     virtual int getWeaponDamage() = 0;
 };
 

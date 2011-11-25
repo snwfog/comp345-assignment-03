@@ -173,3 +173,35 @@ int Longsword::getWeaponDamage() {
             break;
     }
 }
+
+int Weapon::getSizeModifier() {
+    switch (size) {
+        case FINE:
+            return 8;
+            break;
+        case DIMINUTIVE:
+            return 4;
+            break;
+        case TINY:
+            return 2;
+            break;
+        case SMALL:
+            return 1;
+            break;
+        case MEDIUM:
+            return 0;
+            break;
+        case LARGE:
+            return -1;
+            break;
+        case BUGE:
+            return -2;
+            break;
+        case GARGANTUAN:
+            return -4;
+            break;
+        case COLOSSAL:
+            return -8;
+            break;
+    }
+}

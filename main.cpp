@@ -111,7 +111,7 @@ int main (int argc, const char* argv[]) {
     FighterGenerator* fg = new FighterGenerator();
     fg->setCharacterBuilder(new BullyBuilder());
     fg->createNewFighter("KittyMeow");
-
+    fg->getCharacter()->setHitPoint(4);
     d20GameBuilder* gb = new d20GameBuilder();
     gb->createNewGame();
     gb->setStaticGameComponent(fg->getCharacter(), mg->getMap());

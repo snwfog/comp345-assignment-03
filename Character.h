@@ -113,12 +113,15 @@ public:
     void equipWeapon(WeaponSlot, Weapon*);
     Weapon* unequipWeapon(WeaponSlot);
     
+    void usePotion(Potion*);
+    
     void removeInventoryItem(int index, bool notify = TRUE);
     void putInventoryItem(Item*, bool notify = TRUE);
     void putToInventory(Item*, int, bool notify = TRUE);
     void deleteInventoryItem(int);
     void equipWeaponFromInventory(WeaponSlot ws, int inventorySlot);
     void equipArmorFromInventory(ArmorSlot as, int inventorySlot);
+    void deleteInventoryItem(int index, bool notify, bool log, string msg);
     
     // character check function
     bool isDisabled() { return ((hitPoint <= 0) && (hitPoint < -10)); }

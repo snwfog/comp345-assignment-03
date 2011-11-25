@@ -244,6 +244,9 @@ Weapon* Character::unequipWeapon(WeaponSlot ws) {
     return am;
 }
 
+
+// character actions
+
 void Character::levelUp() {
     setLevel(getLevel() + 1);
     int hp = getMaxHitPoint() + roll(10) + toModifier(getAbilityScore(CON));
@@ -258,6 +261,14 @@ void Character::levelUp() {
     stringstream msg;
     msg << "**Congratulation!** You've reached level " << level << ".";
     observer->updateConsole(&msg, TRUE);
+}
+
+void Character::usePotion(Potion* pot) {
+    hitPoint += pot->getPotionPool();
+    if (hitPoint > maxHitPoint) 
+        hitPoint = maxHitPoint;
+    pot->setPotionPool(0);
+    observer->updateVital();
 }
 
 //enum ArmorSlot { HEAD = 1, CHEST, HANDS, FEET, WAIST, WRIST, FINGER };
@@ -320,6 +331,14 @@ void Character::deleteInventoryItem(int index) {
     //delete characterInventory[index];
     removeInventoryItem(index, TRUE);
     
+}
+
+void Character::deleteInventoryItem(int index, bool notify, bool log, string msg) {
+//    delete characterInventory[index];
+    characterInventory[index] = NULL;
+    if (notify)
+        observer->updateConsole(msg, log);
+    observer->updateInventory();
 }
 
 // specify index before storing

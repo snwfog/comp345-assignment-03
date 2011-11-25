@@ -877,6 +877,14 @@ void d20Game::interactWithMerchant() {
                                 updateConsole("Error: Delete unsuccessful.");
                             }
                             break;
+                        case 'u':
+                            if (temp->getItemType() == IS_POTION) {
+                                player->usePotion(static_cast<Potion*>(temp));
+                                player->deleteInventoryItem(index, TRUE, FALSE, "You have just consumed a potion.");
+                            } else {
+                                updateConsole("Error: That item has no use effect.");
+                            }
+                            break;
                         default:
                             break;
                     }
@@ -1022,6 +1030,14 @@ void d20Game::interactWithChest() {
                                 msg.clear();
                             } else {
                                 updateConsole("Error: Delete unsuccessful.");
+                            }
+                            break;
+                        case 'u':
+                            if (temp->getItemType() == IS_POTION) {
+                                player->usePotion(static_cast<Potion*>(temp));
+                                player->deleteInventoryItem(index, TRUE, FALSE, "You have just consumed a potion.");
+                            } else {
+                                updateConsole("Error: That item has no use effect.");
                             }
                             break;
                         default:
@@ -1299,7 +1315,15 @@ void d20Game::inventoryEdit(int it) {
                     msg.clear();
                 }
                 break;
-                
+            // use an item of the inventory, mostly for potion
+            case 'u':
+                if (item->getItemType() == IS_POTION) {
+                    player->usePotion(static_cast<Potion*>(item));
+                    player->deleteInventoryItem(index, TRUE, FALSE, "You have just consumed a potion.");
+                } else {
+                    updateConsole("Error: That item has no use effect.");
+                }
+                break;
             default:
                 break;
         }
