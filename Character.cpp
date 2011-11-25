@@ -340,25 +340,45 @@ void Character::putToInventory(Item* it, int index, bool notify) {
             msg.str("");
             msg.clear();
         } else {
-            observer->updateConsole("Error: Your inventory is full!", FALSE);
+            observer->updateConsole("Error: That slot is occupied!", FALSE);
         }
     }
 }
 
 // auto store item in inventory
 void Character::putInventoryItem(Item* it, bool notify) {
+    stringstream msg;
+    bool success = FALSE;
     for (int i = 0; i < 10; i++) {
         if (characterInventory[i] == NULL) {
-            putToInventory(it, i, notify);
+            characterInventory[i] = it;
+            success = TRUE;
             break;
+        }
+    }
+    
+    if (notify) {
+        if (success) {
+            msg << "You've stored " << it->getName() << " in your inventory.";
+            observer->updateConsole(&msg, TRUE);
+            observer->updateInventory();
+            msg.str("");
+            msg.clear();
+        } else {
+            observer->updateConsole("Error: Inventory is full!", FALSE);
         }
     }
 }
 
 void Character::buy(Merchant* merchant, int index) {
     if (gold >= merchant->peek(index)->getCost()) {
-        gold -= merchant->peek(index)->getCost();
-        putInventoryItem(merchant->getItem(index));
+        if (!inventoryIsFull()) {
+            gold -= merchant->peek(index)->getCost();
+            putInventoryItem(merchant->getItem(index));
+        } else {
+            observer->updateConsole("Error: Inventory is full!", FALSE);
+        }
+        
     } else {
         observer->updateConsole("Error: You cannot afford that item!", FALSE);
     }
@@ -374,6 +394,14 @@ void Character::sell(int index) {
     observer->updateConsole(msg.str().c_str(), TRUE);
     msg.str("");
     msg.clear();
+}
+
+bool Character::inventoryIsFull() {
+    for (int i = 0; i < 10; i++) {
+        if (characterInventory[i] == NULL)
+            return FALSE;
+    }
+    return TRUE;
 }
 
 

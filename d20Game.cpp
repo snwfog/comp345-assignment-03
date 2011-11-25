@@ -972,12 +972,16 @@ void d20Game::interactWithChest() {
                         wItem = createWindowItem();
                         updateItem(chest->peek(index));
                         if ((c = getch()) == 't') {
-                            player->putInventoryItem(chest->getItem(index));
-                            if (chest->getNumberOfItem() == 0) {
-                                quit = TRUE;
-                                map->setAtLocation(currentChestCoordinate->y, currentChestCoordinate->x, MapObject(currentChestCoordinate->y, currentChestCoordinate->x, EMPTY));   
+                            if (!player->inventoryIsFull()) {
+                                player->putInventoryItem(chest->getItem(index));
+                                if (chest->getNumberOfItem() == 0) {
+                                    quit = TRUE;
+                                    map->setAtLocation(currentChestCoordinate->y, currentChestCoordinate->x, MapObject(currentChestCoordinate->y, currentChestCoordinate->x, EMPTY));   
+                                }
+                                updateChestStach(chest);
+                            } else {
+                                updateConsole("Error: Inventory is full!");
                             }
-                            updateChestStach(chest);
                         } else {
                             updateConsole("Error: You have not take anything from the chest.");
                         }
@@ -1118,8 +1122,10 @@ void d20Game::equippedWeaponEdit(int it) {
         updateItem(item);
         switch (c = getch()) {
             case 'd':
-            case 's':
                 updateConsole("Error: You must unequip that item first!");
+                break;
+            case 's':
+                updateConsole("Error: You must be close to a merchant to do that.");
                 break;
             case '1':
             case '2':
@@ -1132,7 +1138,10 @@ void d20Game::equippedWeaponEdit(int it) {
             case '9':
             case '0':
                 index = static_cast<int>(c - '0');
-                player->putToInventory(player->unequipWeapon(ws), index);
+                if (player->getInventoryItem(index) == NULL)
+                    player->putToInventory(player->unequipWeapon(ws), index);
+                else 
+                    updateConsole("Error: Inventory slot is occupied!");
                 break;
             default:
                 updateConsole("Error: Unrecognized command.");

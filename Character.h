@@ -131,6 +131,7 @@ public:
     void deleteEquippedWeapon(WeaponSlot);
     
     int emptyInventorySlot();
+    bool inventoryIsFull();
     
     // merchant related actions
     void buy(Merchant*, int);
