@@ -41,24 +41,13 @@ void BullyBuilder::initializeCharacter() {
     character->setLevel(1);
     character->setMaxAttackBonus(1);
     character->setMaxDamageBonus(1);
+    character->setArmorBonus(0);
     setBaseAbilityScore(abilityRanks);
     character->setHitPoint(roll(10) + toModifier(character->getAbilityScore(CON)));
     character->setMaxHitPoint(character->getHitPoint());
     character->setManaPoint(0);
     character->setMaxManaPoint(character->getManaPoint());
     character->wipeAllContainer();
-    
-    
-    // testing gears
-    ItemGenerator* ig = new ItemGenerator();
-    ig->setArmorBuilder(new FullplateArmorBuilder());
-    ig->constructArmor("Testing Fullplate", HEAD);
-    character->setInventoryItem(0, ig->getArmor());
-    ig->setLongswordBuilder(new LongswordBuilder());
-    ig->constructLongsword("Testing Longsword", ONEHAND, MEDIUM);
-    character->setInventoryItem(1, ig->getLongsword());
-    ig->constructLongsword("Ashkandii Greater Sword", TWOHAND, BUGE);
-    character->setEquippedWeapon(MAINHAND, ig->getLongsword());
 }
 
 void NimbleBuilder::initializeCharacter() {
@@ -68,6 +57,7 @@ void NimbleBuilder::initializeCharacter() {
     character->setLevel(1);
     character->setMaxAttackBonus(1);
     character->setMaxDamageBonus(1);
+    character->setArmorBonus(0);
     setBaseAbilityScore(abilityRanks);
     character->setHitPoint(roll(10) + toModifier(CON));
     character->setMaxHitPoint(character->getHitPoint());
@@ -77,18 +67,53 @@ void NimbleBuilder::initializeCharacter() {
 }
 
 void TankBuilder::initializeCharacter() {
-    Attribute abilityRanks[] = { CON, DEX, STR, INT, CHR, WIS };
+    Attribute abilityRanks[] = { DEX, CON, STR, INT, CHR, WIS };
     
     character->setCharacterClass("Tank");
     character->setLevel(1);
     character->setMaxAttackBonus(1);
     character->setMaxDamageBonus(1);
+    character->setArmorBonus(0);
     setBaseAbilityScore(abilityRanks);
     character->setHitPoint(roll(10) + toModifier(CON));
     character->setMaxHitPoint(character->getHitPoint());
     character->setManaPoint(0);
     character->setMaxManaPoint(character->getManaPoint());
     character->wipeAllContainer();
+    
+    // monster gear
+    ItemGenerator* ig = new ItemGenerator();
+    ig->setArmorBuilder(new LeatherArmorBuilder());
+    
+    ig->constructArmor("NPC Monster Helmet", HEAD);
+    character->setEquippedArmor(HEAD, ig->getArmor());
+    
+    ig->constructArmor("NPC Monster Breastplate", CHEST);
+    character->setEquippedArmor(CHEST, ig->getArmor());
+    
+    ig->constructArmor("NPC Monster Boots", FEET);
+    character->setEquippedArmor(FEET, ig->getArmor());
+    
+    ig->constructLongsword("Thief's Poinard", ONEHAND, MEDIUM);
+    character->setEquippedWeapon(MAINHAND, ig->getLongsword());
+}
+
+void MonsterBuilder::initializeCharacter() {
+    Attribute abilityRanks[] = { DEX, CON, STR, INT, CHR, WIS };
+    
+    character->setCharacterClass("Evil Goblins");
+    character->setLevel(1);
+    character->setMaxAttackBonus(1);
+    character->setMaxDamageBonus(1);
+    character->setArmorBonus(0);
+    setBaseAbilityScore(abilityRanks);
+    character->setHitPoint(roll(10) + toModifier(CON));
+    character->setMaxHitPoint(character->getHitPoint());
+    character->setManaPoint(0);
+    character->setMaxManaPoint(character->getManaPoint());
+    character->wipeAllContainer();
+    
+    
 }
 
 void FighterGenerator::createNewFighter() {

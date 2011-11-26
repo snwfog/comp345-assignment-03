@@ -71,7 +71,7 @@ public:
     // longsword builder
     void setLongswordBuilder(LongswordBuilder* lsb) { longswordBuilder = lsb; }
     Longsword* getLongsword() { return longswordBuilder->getWeapon(); }
-    void constructLongsword(string name = "Random Longsword", WeaponWield wield = static_cast<WeaponWield>(roll(2)), Size size = static_cast<Size>(roll(4, 1, 3)));
+    void constructLongsword(string name = "Random Longsword", WeaponWield wield = static_cast<WeaponWield>(roll(2)), Size size = static_cast<Size>(roll(9)));
     
     // potion builder
     void setPotionBuilder(PotionBuilder* pb) { potionBuilder = pb; }

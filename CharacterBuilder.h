@@ -35,6 +35,11 @@ public:
     void initializeCharacter();
 };
 
+class MonsterBuilder : public CharacterBuilder {
+public:
+    void initializeCharacter();
+};
+
 class FighterGenerator {
 public:
     Character* getCharacter() { return characterBuilder->getCharacter(); }

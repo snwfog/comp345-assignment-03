@@ -8,8 +8,8 @@
 #include <ctime>
 #include <cstdlib>
 #include <sstream>
-#include "d20Game.h"
 #include "MapEditor.h"
+#include "d20Game.h"
 #include "ChestBuilder.h"
 #include "MapBuilder.h"
 #include "CharacterBuilder.h"
@@ -20,44 +20,86 @@ using namespace std;
 int main (int argc, const char* argv[]) {
     srand(time(0));
     
-//    int opt;
-//    string input = "";
-//    cout << "Welcome to the Game Editor!" << endl;
-//    
-//    while (true) {
-//        cout << "1. Map Editor" << endl;
-//        cout << "2. Character Editor" << endl;
-//        cout << "3. Quit Editor" << endl;
-//        cout << "Choose your option: ";
-//        // for safety check of input http://www.cplusplus.com/forum/articles/6046/
-//        getline(cin, input);
-//        stringstream stm(input);
-//        if (stm >> opt && opt <= 3 && opt >= 1) {
-//            switch (opt) {
-//                case 1: {
-//                    cout << "Please enter a map name. If the map already exists, " << endl;
-//                    cout << "it will be loaded, else a new map will be created with the name." << endl;
-//                    cout << "Map name: ";
-//                    string file;
-//                    cin >> file;
-//                    MapEditor* editor = new MapEditor(file);
-//                    break; }
-//                case 2: {
-//                    cout << "Sorry, the Character Editor  is not available yet." << endl;
-//                    break; }
-//                case 3: {
-//                    cout << "Good bye!" << endl;
-//                    exit(1);
-//                    break;}
-//                default: {
-//                    cout << "Unrecognized option." << endl;
-//                    break;  }  
-//            }
-//
-//        }
-//        
-//        cout << "Error: Unrecognized option, please try again." << endl;    
-//    }
+    int opt;
+    string input = "";
+    cout << "*** Welcome to Dungeons and Dragons (tm)! ***" << endl;
+    
+    // generate a single fighter throughout the entire game
+    FighterGenerator* fg = new FighterGenerator();
+    fg->setCharacterBuilder(new BullyBuilder());
+    fg->createNewFighter("Jennifer");
+    Character* player = fg->getCharacter();
+    
+    bool quit = FALSE;
+    while (!quit) {
+        cout << "1. Map Editor" << endl;
+        cout << "2. Play Arena" << endl;
+        cout << "3. Play Custom Map" << endl;
+        cout << "4. Quit Game" << endl;
+        cout << "Choose your option: ";
+        // for safety check of input http://www.cplusplus.com/forum/articles/6046/
+        getline(cin, input);
+        stringstream stm(input);
+        if (stm >> opt && opt <= 4 && opt >= 1) {
+            switch (opt) {
+                case 1: {
+                    cout << "Please enter a map name. If the map already exists, " << endl;
+                    cout << "it will be loaded, else a new map will be created with the name." << endl;
+                    cout << "Map name: ";
+                    getline(cin, input);
+                    MapEditor* editor = new MapEditor(input);
+                    break; }
+                case 2: {
+                  /**
+                    * MapBuilder
+                    */
+                    MapGenerator* mg = new MapGenerator();
+                    mg->setMapBuilder(new ArenaBuilder());
+                    mg->constructMap();
+                    //MapEditor* me = new MapEditor(mg->getMap());
+                    
+                    d20GameBuilder* gb = new d20GameBuilder();
+                    gb->createNewGame();
+                    gb->setStaticGameComponent(player, mg->getMap());
+                    d20Game* game = gb->getGame();
+                    game->start();
+                    delete gb;
+                    delete mg;
+                    gb = NULL;
+                    mg = NULL;
+                    break; }
+                case 3: {
+                    cout << "Map name: ";
+                    getline(cin, input);
+                    std::fstream file;
+                    file.open(input.c_str(), ios_base::out | ios_base::in);
+                    
+                    if (file.is_open()) {
+                        Map* map = new Map(input);
+                        d20GameBuilder* gb = new d20GameBuilder();
+                        gb->createNewGame();
+                        gb->setStaticGameComponent(player, map);
+                        d20Game* game = gb->getGame();
+                        game->start();
+                        delete gb;
+                        delete map;
+                        gb = NULL;
+                        map = NULL;
+                    } else {
+                        cout << "Map does not exist!" << endl;
+                    }
+                    break; }
+                case 4: {
+                    cout << "Good bye!" << endl;
+                    quit = TRUE;
+                    exit(1);
+                    break;}
+                default: {
+                    cout << "Error: Unrecognized option, please try again." << endl;   
+                    break;  }  
+            }
+        }
+    }
     
     /**
      * ChestBuilder test
@@ -100,23 +142,6 @@ int main (int argc, const char* argv[]) {
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
 //    cout << ig->getLongsword()->getWeaponDamage() << endl;
-
-//    /**
-//     * MapBuilder test
-//     */
-    MapGenerator* mg = new MapGenerator();
-    mg->setMapBuilder(new ArenaBuilder());
-    mg->constructMap();
-    //MapEditor* me = new MapEditor(mg->getMap());
-    FighterGenerator* fg = new FighterGenerator();
-    fg->setCharacterBuilder(new BullyBuilder());
-    fg->createNewFighter("KittyMeow");
-    fg->getCharacter()->setHitPoint(4);
-    d20GameBuilder* gb = new d20GameBuilder();
-    gb->createNewGame();
-    gb->setStaticGameComponent(fg->getCharacter(), mg->getMap());
-    d20Game* game = gb->getGame();
-    game->start();
 
     /**
      * CharacterBuilder test

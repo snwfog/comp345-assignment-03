@@ -105,6 +105,10 @@ public:
     WINDOW* createWindowChest();
     void updateChestStach(Chest*);
     
+    WINDOW* wMonster;
+    WINDOW* createWindowMonster();
+    void updateMonsterVital(Character*);
+    
     /**
      * Map and player movement
      */
@@ -118,6 +122,8 @@ public:
      */
     // chest stash, only stored generated chest
     vector<Chest*> chests;
+    // monster list, only stored generated monster
+    vector<Character*> monsters;
     
 private:
     Map* map;
@@ -142,7 +148,7 @@ private:
     void interactWithMerchant();
     // edit player inventory at merchant
     void interactWithChest();
-    
+    void interactWithMonster();
     
     /**
      * Others

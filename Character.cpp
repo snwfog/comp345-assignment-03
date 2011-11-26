@@ -75,6 +75,8 @@ void Character::equipArmor(ArmorSlot as, Armor* am) {
             case CHR:
                 abilityScores[CHR] += it->second;
                 break;
+            case ARMOR_CLASS:
+                maxArmorBonus += it->second;
             default:
                 break;
         }
@@ -120,6 +122,9 @@ Armor* Character::unequipArmor(ArmorSlot as) {
                 break;
             case CHR:
                 abilityScores[CHR] -= it->second;
+                break;
+            case ARMOR_CLASS:
+                maxArmorBonus -= it->second;
                 break;
             default:
                 break;
@@ -269,6 +274,87 @@ void Character::usePotion(Potion* pot) {
         hitPoint = maxHitPoint;
     pot->setPotionPool(0);
     observer->updateVital();
+}
+
+void Character::battle(Character* opponent) {
+    stringstream msg;
+    bool playerHit = FALSE;
+    bool isCritical = FALSE;
+    int damage = 1;
+    int rl = roll(20);
+    
+    // if crit
+    if (rl == 20) {
+        playerHit = TRUE;
+        // hit for sure
+        int attackRoll = getAttackRoll();
+        if (attackRoll >= opponent->getArmorBonus()) {
+            isCritical = TRUE;
+            msg << this->getName() << " landed a critical hit on " << opponent->getName() << ".";
+            observer->updateConsole(&msg, TRUE);
+            msg.str("");
+            msg.clear();
+            damage = 2 * (this->getMaxDamagBonus());
+        } else {
+            msg << this->getName() << " landed a natural hit on " << opponent->getName() << ".";
+            observer->updateConsole(&msg, TRUE);
+            msg.str("");
+            msg.clear();
+            damage = (this->getMaxDamagBonus());
+        }
+    } else if (rl == 1) {
+        msg << this->getName() << " swings, but misses " << opponent->getName() << ".";
+        observer->updateConsole(&msg, TRUE);
+        msg.str("");
+        msg.clear();
+        damage = 0;
+    } else if (getAttackRoll() >= opponent->getArmorBonus()) {
+        playerHit = TRUE;
+        damage = (this->getMaxDamagBonus());
+    } else {
+        msg << this->getName() << " swings, but misses " << opponent->getName() << ".";
+        observer->updateConsole(&msg, TRUE);
+        msg.str("");
+        msg.clear();
+        damage = 0;
+    }
+
+    if (playerHit) {
+        opponent->setHitPoint(opponent->getHitPoint() - damage);
+        msg << this->getName() << " deals " << damage << " damage(s) to " << opponent->getName() << ".";
+        observer->updateConsole(&msg, TRUE);
+        msg.str("");
+        msg.clear();
+    }
+    
+    observer->updateVital();
+}
+
+int Character::getAttackRoll() {
+    stringstream msg;
+    int aRoll = roll(20);
+    int attackRoll = 0;
+    int sizeModifier = 0;
+    Weapon* mh = weapons[MAINHAND];
+    Weapon* oh = weapons[OFFHAND];
+    if (mh != NULL) {
+        if (mh->getWeaponWield() == TWOHAND || oh == NULL) {
+            sizeModifier = mh->getSizeModifier();
+        } else if (oh != NULL) {
+            sizeModifier = mh->getSizeModifier() + oh->getSizeModifier();
+        }
+    } else if (oh != NULL) {
+        sizeModifier = oh->getSizeModifier();
+    }
+    
+    
+    attackRoll = aRoll + maxAttackBonus + toModifier(abilityScores[STR]) + sizeModifier;
+    msg << this->getName() << " rolls " << attackRoll << " [" << aRoll << " (d20) + " << getMaxAttackBonus() << " (attack bonus) + " << toModifier(abilityScores[STR]) << " (strength modifier) + " << sizeModifier << " (size modifier)].";
+    observer->updateConsole(&msg, TRUE);
+    msg.str("");
+    msg.clear();
+    
+    return attackRoll;
 }
 
 //enum ArmorSlot { HEAD = 1, CHEST, HANDS, FEET, WAIST, WRIST, FINGER };

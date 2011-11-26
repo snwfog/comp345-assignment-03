@@ -34,6 +34,7 @@ private:
     int hitPoint, manaPoint;
     int maxHitPoint, maxManaPoint;
     int maxAttackBonus, maxDamageBonus;
+    int maxArmorBonus;
     int gold;
     
     // character ability scores
@@ -56,7 +57,7 @@ private:
     Observer* observer;
     
     // map coordinate
-    Coordinate coord;
+    Coordinate* coord;
 public:
     // functions
     int attackPerRound() { return ceil(level/5); }
@@ -78,11 +79,12 @@ public:
     int getMaxAttackBonus() { return maxAttackBonus; }
     int getMaxDamagBonus() { return maxDamageBonus; }
     int getAbilityScore(Attribute at) { return abilityScores[at]; }
+    int getArmorBonus() { return maxArmorBonus; }
     Attribute* getAbilityRanks() { return abilityRank; }
     Armor* getEquippedArmor(ArmorSlot as) { return (equipments)[as]; }
     Weapon* getEquippedWeapon(WeaponSlot ws) { return (weapons)[ws]; }
     Item* getInventoryItem(int index) { return characterInventory[index]; }
-    Coordinate getCoordinate() { return coord; }
+    Coordinate* getCoordinate() { return coord; }
     
     // setters
     void setName(string n) { name = n; }
@@ -97,13 +99,13 @@ public:
     void setMaxAttackBonus(int atkb) { maxAttackBonus = atkb; }
     void setMaxDamageBonus(int dmgb) { maxDamageBonus = dmgb; }
     void setAbilityScore(Attribute at, int value) { abilityScores[at] = value; }
+    void setArmorBonus(int ab) { maxArmorBonus = ab; }
     void setAbilityRanks(Attribute* attr) { abilityRank = attr; }
     void setEquippedArmor(ArmorSlot as, Armor* am);
     void setEquippedWeapon(WeaponSlot ws, Weapon* wp);
     void setInventoryItem(int index, Item* it) { characterInventory[index] = it; }
     void setCoordinate(int y, int x) {
-        coord.y = y;
-        coord.x = x;
+        coord = new Coordinate(y, x);
     }
     
     // character actions
@@ -114,6 +116,9 @@ public:
     Weapon* unequipWeapon(WeaponSlot);
     
     void usePotion(Potion*);
+    // main d20 battle function
+    void battle(Character*);
+    int getAttackRoll();
     
     void removeInventoryItem(int index, bool notify = TRUE);
     void putInventoryItem(Item*, bool notify = TRUE);
@@ -124,8 +129,8 @@ public:
     void deleteInventoryItem(int index, bool notify, bool log, string msg);
     
     // character check function
-    bool isDisabled() { return ((hitPoint <= 0) && (hitPoint < -10)); }
-    bool isDead() { return hitPoint <= -10; }
+    bool isDisabled() { return ((hitPoint <= 0) && (hitPoint > -10)); }
+    bool isDead() { return (hitPoint <= -10); }
     
     // helper functions
     // set all armors, weapons inventory to null

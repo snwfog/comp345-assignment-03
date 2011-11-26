@@ -1,7 +1,8 @@
 /**
  *  Item.cpp
  *  comp345-assignment-03
- *
+ *  // Should fix some of the switch cases and handle them in 
+ *  // the builder file.
  */
 
 #include <iostream>
@@ -136,6 +137,15 @@ void Weapon::setAllStats() {
 
 void Longsword::setCost() {
     switch (size) {
+    case FINE:
+        cost = 5;
+        break;
+    case DIMINUTIVE:
+        cost = 8;
+        break;
+    case TINY:
+        cost = 10;
+        break;
     case SMALL:
         cost = 15;
         break;
@@ -148,6 +158,12 @@ void Longsword::setCost() {
     case BUGE:
         cost = 45;
         break;
+    case GARGANTUAN:
+        cost = 60;
+        break;
+    case COLOSSAL:
+        cost = 75;
+        break;
     default:
         cost = 10000;
         break;
@@ -156,6 +172,15 @@ void Longsword::setCost() {
 
 int Longsword::getWeaponDamage() {
     switch (size) {
+        case FINE:
+            return roll(2);
+            break;
+        case DIMINUTIVE:
+            return roll(3);
+            break;
+        case TINY:
+            return roll(4);
+            break;
         case SMALL:
             return roll(6);
             break;
@@ -167,6 +192,12 @@ int Longsword::getWeaponDamage() {
             break;
         case BUGE:
             return roll(3, 6);           
+            break;
+        case GARGANTUAN:
+            return roll(4, 6);
+            break;
+        case COLOSSAL:
+            return roll(6, 6);
             break;
         default:
             return NULL;

@@ -32,6 +32,10 @@ WINDOW* d20Game::createWindowVital() {
 }
 
 void d20Game::updateVital() {
+    wclear(wWeapon);
+    wborder(wWeapon, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(wWeapon);
+    
     stringstream msg;
     msg << "HP: " << player->getHitPoint() << "/" << player->getMaxHitPoint();
     mvwprintw(wVital, 1, 2, msg.str().c_str());
@@ -59,12 +63,16 @@ void d20Game::updateVital() {
 
 // ability window
 WINDOW* d20Game::createWindowAbility() {
-    WINDOW* win = newwin(10, 16, 8, 0);
+    WINDOW* win = newwin(11, 16, 8, 0);
     wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     return win;
 }
 
 void d20Game::updateAbility() {
+    wclear(wWeapon);
+    wborder(wWeapon, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(wWeapon);
+    
     stringstream msg;
     msg << "CON: " << player->getAbilityScore(CON);
     mvwprintw(wAbility, 1, 2, msg.str().c_str());
@@ -106,12 +114,17 @@ void d20Game::updateAbility() {
     msg.str("");
     msg.clear();
     
+    msg << "ARMOR: " << player->getArmorBonus();
+    mvwprintw(wAbility, 9, 2, msg.str().c_str());
+    msg.str("");
+    msg.clear();
+    
     wrefresh(wAbility);
 }
 
 // option window -- static
 WINDOW* d20Game::createWindowOption() {
-    WINDOW* win = newwin(8, 16, 17, 0);
+    WINDOW* win = newwin(7, 16, 18, 0);
     wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     return win;
 }
@@ -556,6 +569,39 @@ void d20Game::updateChestStach(Chest* chest) {
     wrefresh(wChest);
 }
 
+WINDOW* d20Game::createWindowMonster() {
+    WINDOW* win = newwin(8, 16, 0, 64);
+    wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    return win;
+}
+
+void d20Game::updateMonsterVital(Character* monster) {
+    wclear(wMonster);
+    wborder(wMonster, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(wMonster);
+    
+    mvwprintw(wMonster, 1, 2, monster->getName().c_str());
+    mvwprintw(wMonster, 2, 2, monster->getCharacterClass().c_str());
+    mvwprintw(wMonster, 3, 0, "+--------------+");
+    stringstream msg;
+    msg << "HP: " << monster->getHitPoint() << "/" << monster->getMaxHitPoint();
+    mvwprintw(wMonster, 4, 2, msg.str().c_str());
+    msg.str("");
+    msg.clear();
+    
+    msg << "MP: " << monster->getManaPoint() << "/" << player->getMaxManaPoint();
+    mvwprintw(wMonster, 5, 2, msg.str().c_str());
+    msg.str("");
+    msg.clear();
+    
+    msg << "LVL: " << monster->getLevel();
+    mvwprintw(wMonster, 6, 2, msg.str().c_str());
+    msg.str("");
+    msg.clear();
+    
+    wrefresh(wMonster);
+}
+
 
 // windows related functions
 void d20Game::wkill(WINDOW* win) {
@@ -726,8 +772,8 @@ void d20Game::start() {
     updateConsole("Tip: Use the arrow key to move your character!");
     while (!quit) {
         // check player location see if it is at the exit
-        Coordinate playerCoord = player->getCoordinate();
-        if (map->getAtLocation(playerCoord.y, playerCoord.x)->mapObjectType != EXIT) {
+        Coordinate* playerCoord = player->getCoordinate();
+        if (map->getAtLocation(playerCoord->y, playerCoord->x)->mapObjectType != EXIT) {
             // refresh map on screen
             refreshmap();
             switch (c = getch()) {
@@ -774,7 +820,7 @@ void d20Game::start() {
 void d20Game::interactWithEnvironment() {
     switch (getPrioritaryInteractableObject()->mapObjectType) {
         case MONSTER:
-            updateConsole("MONSTER!!!");
+            interactWithMonster();
             break;
         case TREASURE_CHEST:
             interactWithChest();
@@ -927,6 +973,7 @@ void d20Game::interactWithChest() {
     Chest* chest = NULL;
     MapObject* chestObject = getPrioritaryInteractableObject();
     Coordinate* currentChestCoordinate;
+    // check in the chest list for this chest
     for (int i = 0; i < chests.size(); i++) {
         if (chests[i]->getNumberOfItem() != 0) { // if the chest still has items
             currentChestCoordinate = chests[i]->getCoordinate();
@@ -956,7 +1003,7 @@ void d20Game::interactWithChest() {
     updateChestPaneHelp();
     
     // print character panel tip
-    //updateConsole("Tip: [C]hest to access chest contents.");
+    updateConsole("Tip: [C]hest to access chest contents.");
     stringstream msg;
     bool quit = FALSE;
     int c;
@@ -1076,24 +1123,122 @@ void d20Game::interactWithChest() {
     wItem = NULL;
 }
 
+void d20Game::interactWithMonster() {
+    // on first interaction, check first if 
+    // this monster is already generated
+    Character* monster = NULL;
+    MapObject* monsterObject = getPrioritaryInteractableObject();
+    Coordinate* currentMonsterCoordinate;
+    // check in the monster vector for this monster
+    for (int i = 0; i < monsters.size(); i++) {
+        // if this monster is not dead
+        if (!monsters[i]->isDead()) {
+            // if monster is dead
+            currentMonsterCoordinate = monsters[i]->getCoordinate();
+            if (currentMonsterCoordinate->y == monsterObject->y && currentMonsterCoordinate->x == monsterObject->x) {
+                monster = monsters[i];
+            }
+        }
+    }
+    
+    // if couldnt located already generated monster
+    // then generates a new monster
+    // this part need to fix, either put level into consideration
+    // generated opponent should be equipped with items
+    if (monster == NULL) {
+        FighterGenerator* fg = new FighterGenerator();
+        // set a bully monster
+        fg->setCharacterBuilder(new BullyBuilder());
+        // set his name
+        fg->createNewFighter("Evil Gobs");
+        fg->getCharacter()->setCoordinate(monsterObject->y, monsterObject->x);
+        fg->getCharacter()->attachCharacterObserver(this);
+        monsters.push_back(fg->getCharacter());
+        monster = fg->getCharacter();
+        currentMonsterCoordinate = new Coordinate(monsterObject->y, monsterObject->x);        
+    }
+    
+    wMonster = createWindowMonster();
+    updateMonsterVital(monster);
+    // print character panel tip
+    updateConsole("Tip: [B]attle with this monster!");
+    stringstream msg;
+    bool quit = FALSE;
+    int c;
+    
+    while (!quit) {
+        switch (c = getch()) {
+            case 27:
+                quit = TRUE;
+                break;
+            case 'b':
+                if (!player->isDisabled()) {
+                    player->battle(monster);
+                    if (monster->isDead()) {
+                        msg << "You killed " << monster->getName() << ".";
+                        updateConsole(msg.str(), TRUE);
+                        msg.str("");
+                        msg.clear();
+                        
+                        // remove monster pane
+                        wkill(wMonster);
+                        wMonster = NULL;
+                        quit = TRUE;
+                        // remove monster from map
+                        map->setAtLocation(currentMonsterCoordinate->y, currentMonsterCoordinate->x, MapObject(currentMonsterCoordinate->y, currentMonsterCoordinate->x, EMPTY));
+                        
+                    } else {
+                        updateMonsterVital(monster);
+                        // monster strikes back
+                        if (!monster->isDisabled()) {
+                            monster->battle(player);
+                            if (player->isDisabled()) {
+                                updateConsole("You become severely wounded!");
+                            } else if (player->isDead()) {
+                                msg << "You were killed by " << monster->getName() << ".";
+                                updateConsole(msg.str(), TRUE);
+                                msg.str("");
+                                msg.clear();
+                                exit(1);
+                            }
+                        }
+                    }
+                } else
+                    updateConsole("You cannot continue because you are severely wounded.", FALSE);
+
+                break;
+            default:
+                break;
+        }
+    }
+    
+    // clean the console
+    // updateConsole("");
+    // clean the windows
+    if (wMonster != NULL)
+        wkill(wMonster);
+    wMonster = NULL;
+    
+}
+
 MapObject* d20Game::getPrioritaryInteractableObject() {
     // check top right
     MapObject* objectArray[8];
-    objectArray[0] = map->getAtLocation(player->getCoordinate().y - 1, player->getCoordinate().x - 1);
+    objectArray[0] = map->getAtLocation(player->getCoordinate()->y - 1, player->getCoordinate()->x - 1);
     // check top
-    objectArray[1] = map->getAtLocation(player->getCoordinate().y - 1, player->getCoordinate().x);
+    objectArray[1] = map->getAtLocation(player->getCoordinate()->y - 1, player->getCoordinate()->x);
     // check top right
-    objectArray[2] = map->getAtLocation(player->getCoordinate().y - 1, player->getCoordinate().x + 1);
+    objectArray[2] = map->getAtLocation(player->getCoordinate()->y - 1, player->getCoordinate()->x + 1);
     // check middle left 
-    objectArray[3] = map->getAtLocation(player->getCoordinate().y, player->getCoordinate().x - 1);
+    objectArray[3] = map->getAtLocation(player->getCoordinate()->y, player->getCoordinate()->x - 1);
     // check middle right
-    objectArray[4] = map->getAtLocation(player->getCoordinate().y, player->getCoordinate().x + 1);
+    objectArray[4] = map->getAtLocation(player->getCoordinate()->y, player->getCoordinate()->x + 1);
     // check bottom left
-    objectArray[5] = map->getAtLocation(player->getCoordinate().y + 1, player->getCoordinate().x - 1);
+    objectArray[5] = map->getAtLocation(player->getCoordinate()->y + 1, player->getCoordinate()->x - 1);
     // check bottom
-    objectArray[6] = map->getAtLocation(player->getCoordinate().y + 1, player->getCoordinate().x);
+    objectArray[6] = map->getAtLocation(player->getCoordinate()->y + 1, player->getCoordinate()->x);
     // check bottom right
-    objectArray[7] = map->getAtLocation(player->getCoordinate().y + 1, player->getCoordinate().x + 1);
+    objectArray[7] = map->getAtLocation(player->getCoordinate()->y + 1, player->getCoordinate()->x + 1);
     
     for (int i = 0; i < 8; i++) {
         switch (objectArray[i]->mapObjectType) {
@@ -1357,26 +1502,26 @@ void d20Game::setPlayerCoordinate() {
 void d20Game::move(int c) {
     switch (c) {
         case KEY_LEFT:
-            movePlayerPosition(player->getCoordinate().y, player->getCoordinate().x - 1);
+            movePlayerPosition(player->getCoordinate()->y, player->getCoordinate()->x - 1);
             break;
         case KEY_RIGHT:
-            movePlayerPosition(player->getCoordinate().y, player->getCoordinate().x + 1);
+            movePlayerPosition(player->getCoordinate()->y, player->getCoordinate()->x + 1);
             break;
         case KEY_UP:
-            movePlayerPosition(player->getCoordinate().y - 1, player->getCoordinate().x);
+            movePlayerPosition(player->getCoordinate()->y - 1, player->getCoordinate()->x);
             break;
         case KEY_DOWN:
-            movePlayerPosition(player->getCoordinate().y + 1, player->getCoordinate().x);
+            movePlayerPosition(player->getCoordinate()->y + 1, player->getCoordinate()->x);
             break;
         default:
-            movePlayerPosition(player->getCoordinate().y, player->getCoordinate().x);
+            movePlayerPosition(player->getCoordinate()->y, player->getCoordinate()->x);
             break;
     }
 }
 
 void d20Game::movePlayerPosition(int y, int x) {
-    int player_x = player->getCoordinate().x;
-    int player_y = player->getCoordinate().y;
+    int player_x = player->getCoordinate()->x;
+    int player_y = player->getCoordinate()->y;
     // check if y and x are out of the stdscr boundaries
     if (!(y >= STD_Y || y < 0 || x >= STD_X || x < 0)) {
         // check if the next case is any other objects
