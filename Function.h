@@ -7,6 +7,7 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 #include <ncurses.h>
+#include <sys/stat.h>
 
 /**
  * Roll function mimicing the d20 roll syntax

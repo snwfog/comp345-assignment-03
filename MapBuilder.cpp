@@ -33,5 +33,5 @@ void ArenaBuilder::placeMapObject() {
     map->setAtLocation(9, 32, MapObject(9, 32, PLAYER));
     
     // set merchant location
-    //map->setAtLocation(15, 32, MapObject(15, 32, MERCHANT));
+    map->setAtLocation(15, 32, MapObject(15, 32, MERCHANT));
 }

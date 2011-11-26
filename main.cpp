@@ -73,18 +73,18 @@ int main (int argc, const char* argv[]) {
                     getline(cin, input);
                     std::fstream file;
                     file.open(input.c_str(), ios_base::out | ios_base::in);
-                    
                     if (file.is_open()) {
+                        // close the file
+                        file.close();
                         Map* map = new Map(input);
                         d20GameBuilder* gb = new d20GameBuilder();
                         gb->createNewGame();
                         gb->setStaticGameComponent(player, map);
                         d20Game* game = gb->getGame();
                         game->start();
+                        
                         delete gb;
-                        delete map;
                         gb = NULL;
-                        map = NULL;
                     } else {
                         cout << "Map does not exist!" << endl;
                     }

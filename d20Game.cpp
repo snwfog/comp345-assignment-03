@@ -704,6 +704,17 @@ void d20Game::killCharacterPanel() {
 /**
  * Game playing related functions
  */
+void d20Game::endgame() {
+    // save character stuffs // not implemented
+    
+    // put character back to initial position
+    movePlayerPosition(playerInitialCoordinate->y, playerInitialCoordinate->x);
+    // save map
+    map->save();
+    // end of ncurses
+    endwin();
+}
+
 void d20Game::start() {
     
     // attach d20game as character observer
@@ -751,17 +762,8 @@ void d20Game::start() {
      */
     // getting player coordinate
     setPlayerCoordinate();
-    
-    // generating all chests
-//    ChestGenerator* cg = new ChestGenerator();
-//    cg->setChestBuilder(new ChestBuilder());
-//    for (int y = 0; y < STD_Y; y++) {
-//        for (int x = 0; x < STD_X; x++) {
-//            cg->constructChest(new Coordinate(y, x));
-//            chests.push_back(cg->getChest());
-//        }
-//    }
-    
+    Coordinate* playerCoord = player->getCoordinate();
+    playerInitialCoordinate = new Coordinate(playerCoord->y, playerCoord->x);
     /**
      * Game loop mode
      */
@@ -772,8 +774,7 @@ void d20Game::start() {
     updateConsole("Tip: Use the arrow key to move your character!");
     while (!quit) {
         // check player location see if it is at the exit
-        Coordinate* playerCoord = player->getCoordinate();
-        if (map->getAtLocation(playerCoord->y, playerCoord->x)->mapObjectType != EXIT) {
+                if ((map->getAtLocation(playerCoord->y, playerCoord->x))->mapObjectType != EXIT) {
             // refresh map on screen
             refreshmap();
             switch (c = getch()) {
@@ -804,14 +805,14 @@ void d20Game::start() {
                     break;
             }
         } else {
-            quit = TRUE;
             // save the character
             // do exit callings
+            quit = TRUE;
         }
     }
     
-    // end of ncurses
-    endwin();
+    // end of game
+    endgame();
 }
 
 /**
@@ -1199,6 +1200,8 @@ void d20Game::interactWithMonster() {
                                 updateConsole(msg.str(), TRUE);
                                 msg.str("");
                                 msg.clear();
+                                // end of game callings
+                                endgame();
                                 exit(1);
                             }
                         }
@@ -1241,20 +1244,22 @@ MapObject* d20Game::getPrioritaryInteractableObject() {
     objectArray[7] = map->getAtLocation(player->getCoordinate()->y + 1, player->getCoordinate()->x + 1);
     
     for (int i = 0; i < 8; i++) {
-        switch (objectArray[i]->mapObjectType) {
-            case MONSTER:
-                return objectArray[i];
-                break;
-            case TREASURE_CHEST:
-                return objectArray[i];
-                break;
-            case MERCHANT:
-                return objectArray[i];
-                break;
-            default:
-                break;
-        }
+        if (objectArray[i]->mapObjectType == MONSTER)
+            return objectArray[i];
     }
+    
+    for (int i = 0; i < 8; i++) {
+        if (objectArray[i]->mapObjectType == TREASURE_CHEST)
+            return objectArray[i];
+    }
+    
+    for (int i = 0; i < 8; i++) {
+        if (objectArray[i]->mapObjectType == MERCHANT)
+            return objectArray[i];
+    }
+    
+    
+    
     return new MapObject(-1, -1, EMPTY);
 }
 

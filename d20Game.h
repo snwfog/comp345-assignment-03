@@ -41,6 +41,7 @@ public:
      * Game playing related functions
      */
     void start(); // start the game playing engine
+    void endgame();
     /**
      * Observer/Windows/Info variables and functions
      */
@@ -128,7 +129,7 @@ public:
 private:
     Map* map;
     Character* player;
-    
+    Coordinate* playerInitialCoordinate;
     // items related actions
     void equippedWeaponEdit(int);
     void equippedArmorEdit(int);
