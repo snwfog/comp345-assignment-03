@@ -22,13 +22,34 @@ int main (int argc, const char* argv[]) {
     
     int opt;
     string input = "";
-    cout << "*** Welcome to Dungeons and Dragons (tm)! ***" << endl;
+    cout << "************************************" << endl;
+    cout << "* Welcome to Dungeons and Dragons! *" << endl;
+    cout << "************************************" << endl;
     
     // generate a single fighter throughout the entire game
     FighterGenerator* fg = new FighterGenerator();
     fg->setCharacterBuilder(new BullyBuilder());
     fg->createNewFighter("Jennifer");
     Character* player = fg->getCharacter();
+    
+    // give awesome starting item to the 
+    ItemGenerator* ig = new ItemGenerator();
+    ig->setArmorBuilder(new FullplateArmorBuilder());
+    ig->constructArmor("Warbringer Chestguard", CHEST);
+    player->putInventoryItem(ig->getArmor(), FALSE); // false is no notifying through observer
+    ig->constructArmor("Warbringer Gauntlets", HANDS);
+    player->putInventoryItem(ig->getArmor(), FALSE);
+    ig->constructArmor("Warbringer Greathelm", HEAD);
+    player->putInventoryItem(ig->getArmor(), FALSE);
+    ig->constructArmor("Warbringer Greaves", FEET);
+    player->putInventoryItem(ig->getArmor(), FALSE);
+    ig->constructArmor("Champion's Seal", FINGER);
+    player->putInventoryItem(ig->getArmor(), FALSE);
+    ig->setLongswordBuilder(new LongswordBuilder());
+    ig->constructLongsword("The Ashbringer", TWOHAND, BUGE);
+    player->putInventoryItem(ig->getLongsword(), FALSE);
+    ig->constructLongsword("Treacherous Blade", TWOHAND, BUGE);
+    player->putInventoryItem(ig->getLongsword(), FALSE);
     
     bool quit = FALSE;
     while (!quit) {
@@ -56,7 +77,6 @@ int main (int argc, const char* argv[]) {
                     MapGenerator* mg = new MapGenerator();
                     mg->setMapBuilder(new ArenaBuilder());
                     mg->constructMap();
-                    //MapEditor* me = new MapEditor(mg->getMap());
                     
                     d20GameBuilder* gb = new d20GameBuilder();
                     gb->createNewGame();
@@ -85,10 +105,8 @@ int main (int argc, const char* argv[]) {
                         
                         delete gb;
                         gb = NULL;
-                    } else {
+                    } else
                         cout << "Map does not exist!" << endl;
-                    }
-                    file.close();
                     break; }
                 case 4: {
                     cout << "Good bye!" << endl;
@@ -101,72 +119,5 @@ int main (int argc, const char* argv[]) {
             }
         }
     }
-    
-    /**
-     * ChestBuilder test
-     */
-//    ChestGenerator* cg = new ChestGenerator();
-//    cg->setChestBuilder(new ChestBuilder());
-//    cg->constructChest();
-//    Chest* achest = cg->getChest();
-//    for (int i = 0; i < achest->size(); i++) {
-//        map<Attribute, int> stats = achest->getItem(i)->getStatsMap();
-//        cout << (achest->getItem(i))->getName() << endl;
-//        map<Attribute, int>::const_iterator itr;
-//        for(itr = stats.begin(); itr != stats.end(); ++itr) {
-//            switch (itr->first) {
-//                case SIZE:
-//                    cout << "Size: " << static_cast<Size>(itr->second) << endl;
-//                    break;
-//                case WEAPON_WIELD:
-//                    cout << "Requires: " << static_cast<WeaponWield>(itr->second);
-//                case WEAPON_SLOT:
-//                    cout << "Slot: " << static_cast<ArmorSlot>(itr->second);
-//                default:
-//                    break;
-//            }
-//        }
-//    }
-
-    /**
-     * ItemBuilder test
-     */
-//    ItemGenerator* ig = new ItemGenerator();
-//    ig->setArmorBuilder(new LeatherArmorBuilder());
-//    ig->constructArmor("New Leather Armor", HEAD);
-//    
-//    ig->setLongswordBuilder(new LongswordBuilder());
-//    ig->constructLongsword("Ashbringer", TWOHAND, HUGE);
-//    cout << ig->getArmor()->getCost() << endl;
-//    cout << ig->getLongsword()->getCost() << endl;
-//    cout << ig->getLongsword()->getWeaponDamage() << endl;
-//    cout << ig->getLongsword()->getWeaponDamage() << endl;
-//    cout << ig->getLongsword()->getWeaponDamage() << endl;
-//    cout << ig->getLongsword()->getWeaponDamage() << endl;
-
-    /**
-     * CharacterBuilder test
-     */
-//    FighterGenerator* fg = new FighterGenerator();
-//    fg->setCharacterBuilder(new BullyBuilder());
-//    fg->createNewFighter("Johnny");
-//    Character* aBully = fg->getCharacter();
-//    
-//    cout << aBully->getName() << endl;
-//    cout << aBully->getCharacterClass() << endl;
-//    cout << "STR: " << aBully->getAbilityScore(STR) << endl;
-//    cout << "CON: " << aBully->getAbilityScore(CON) << endl;
-//    cout << "DEX: " << aBully->getAbilityScore(DEX) << endl;
-//    cout << "INT: " << aBully->getAbilityScore(INT) << endl;
-//    cout << "CHR: " << aBully->getAbilityScore(CHR) << endl;
-//    cout << "WIS: " << aBully->getAbilityScore(WIS) << endl;
-//    cout << "HP: " << aBully->getHitPoint() << endl;
-//    cout << "MP: " << aBully->getManaPoint() << endl;
-//    cout << "Attack Bonus: " << aBully->getMaxAttackBonus() << endl;
-//    
-//    aBully->levelUp();
-//    cout << "HP: " << aBully->getHitPoint() << endl;
-//    cout << "Attack Bonus: " << aBully->getMaxAttackBonus() << endl;
-    
     return 0;
 }

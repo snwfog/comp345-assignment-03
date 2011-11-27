@@ -32,9 +32,9 @@ WINDOW* d20Game::createWindowVital() {
 }
 
 void d20Game::updateVital() {
-    wclear(wWeapon);
-    wborder(wWeapon, '|', '|', '-', '-', '+', '+', '+', '+');
-    wrefresh(wWeapon);
+    wclear(wVital);
+    wborder(wVital, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(wVital);
     
     stringstream msg;
     msg << "HP: " << player->getHitPoint() << "/" << player->getMaxHitPoint();
@@ -69,9 +69,9 @@ WINDOW* d20Game::createWindowAbility() {
 }
 
 void d20Game::updateAbility() {
-    wclear(wWeapon);
-    wborder(wWeapon, '|', '|', '-', '-', '+', '+', '+', '+');
-    wrefresh(wWeapon);
+    wclear(wAbility);
+    wborder(wAbility, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(wAbility);
     
     stringstream msg;
     msg << "CON: " << player->getAbilityScore(CON);
@@ -146,7 +146,6 @@ WINDOW* d20Game::createWindowWeapon() {
 void d20Game::updateWeapon() {
     wclear(wWeapon);
     wborder(wWeapon, '|', '|', '-', '-', '+', '+', '+', '+');
-    wrefresh(wWeapon);
     
     stringstream msg;
     mvwprintw(wWeapon, 1, 2, "[Character Panel]");
@@ -1191,7 +1190,6 @@ void d20Game::interactWithMonster() {
                         quit = TRUE;
                         // remove monster from map
                         map->setAtLocation(currentMonsterCoordinate->y, currentMonsterCoordinate->x, MapObject(currentMonsterCoordinate->y, currentMonsterCoordinate->x, EMPTY));
-                        
                     } else {
                         updateMonsterVital(monster);
                         // monster strikes back
@@ -1216,6 +1214,8 @@ void d20Game::interactWithMonster() {
                 break;
         }
     }
+    // refreshmap
+    refreshmap();
     
     // clean the console
     // updateConsole("");
