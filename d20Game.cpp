@@ -708,7 +708,9 @@ void d20Game::endgame() {
     // save character stuffs // not implemented
     
     // put character back to initial position
-    movePlayerPosition(playerInitialCoordinate->y, playerInitialCoordinate->x);
+    player->setCoordinate(playerInitialCoordinate->y, playerInitialCoordinate->x);
+    map->getAtLocation(playerInitialCoordinate->y, playerInitialCoordinate->x)->mapObjectType = PLAYER;
+    
     // save map
     map->save();
     // end of ncurses
@@ -774,7 +776,8 @@ void d20Game::start() {
     updateConsole("Tip: Use the arrow key to move your character!");
     while (!quit) {
         // check player location see if it is at the exit
-                if ((map->getAtLocation(playerCoord->y, playerCoord->x))->mapObjectType != EXIT) {
+        playerCoord = player->getCoordinate();
+        if ((map->getAtLocation(playerCoord->y, playerCoord->x))->mapObjectType != EXIT) {
             // refresh map on screen
             refreshmap();
             switch (c = getch()) {
@@ -1175,7 +1178,8 @@ void d20Game::interactWithMonster() {
             case 'b':
                 if (!player->isDisabled()) {
                     player->battle(monster);
-                    if (monster->isDead()) {
+                    // disabled monster is dead monster
+                    if (monster->isDisabled()) {
                         msg << "You killed " << monster->getName() << ".";
                         updateConsole(msg.str(), TRUE);
                         msg.str("");
@@ -1191,19 +1195,17 @@ void d20Game::interactWithMonster() {
                     } else {
                         updateMonsterVital(monster);
                         // monster strikes back
-                        if (!monster->isDisabled()) {
-                            monster->battle(player);
-                            if (player->isDisabled()) {
-                                updateConsole("You become severely wounded!");
-                            } else if (player->isDead()) {
-                                msg << "You were killed by " << monster->getName() << ".";
-                                updateConsole(msg.str(), TRUE);
-                                msg.str("");
-                                msg.clear();
-                                // end of game callings
-                                endgame();
-                                exit(1);
-                            }
+                        monster->battle(player);
+                        if (player->isDisabled()) {
+                            updateConsole("You become severely wounded!");
+                        } else if (player->isDead()) {
+                            msg << "You were killed by " << monster->getName() << ".";
+                            updateConsole(msg.str(), TRUE);
+                            msg.str("");
+                            msg.clear();
+                            // end of game callings
+                            endgame();
+                            exit(1);
                         }
                     }
                 } else

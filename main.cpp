@@ -88,6 +88,7 @@ int main (int argc, const char* argv[]) {
                     } else {
                         cout << "Map does not exist!" << endl;
                     }
+                    file.close();
                     break; }
                 case 4: {
                     cout << "Good bye!" << endl;
