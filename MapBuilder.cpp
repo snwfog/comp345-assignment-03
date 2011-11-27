@@ -26,8 +26,8 @@ void ArenaBuilder::placeMapObject() {
     map->setAtLocation(13, 32, MapObject(13, 32, TREASURE_CHEST));
     
     // set monster
-    map->setAtLocation(12, 32, MapObject(14, 32, MONSTER));
-    map->setAtLocation(10, 32, MapObject(14, 32, MONSTER));
+    map->setAtLocation(12, 32, MapObject(12, 32, MONSTER));
+    map->setAtLocation(10, 32, MapObject(10, 32, MONSTER));
     
     // set player location
     map->setAtLocation(9, 32, MapObject(9, 32, PLAYER));

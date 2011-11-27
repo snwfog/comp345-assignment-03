@@ -706,12 +706,15 @@ void d20Game::killCharacterPanel() {
 void d20Game::endgame() {
     // save character stuffs // not implemented
     
-    // put character back to initial position
+    // put character back to initial position calls
+    if (map->getAtLocation(player->getCoordinate()->y, player->getCoordinate()->x)->mapObjectType != EXIT)
+        map->getAtLocation(player->getCoordinate()->y, player->getCoordinate()->x)->mapObjectType = EMPTY;
     player->setCoordinate(playerInitialCoordinate->y, playerInitialCoordinate->x);
     map->getAtLocation(playerInitialCoordinate->y, playerInitialCoordinate->x)->mapObjectType = PLAYER;
     
     // save map
     map->save();
+    
     // end of ncurses
     endwin();
 }
@@ -1135,7 +1138,7 @@ void d20Game::interactWithMonster() {
     // check in the monster vector for this monster
     for (int i = 0; i < monsters.size(); i++) {
         // if this monster is not dead
-        if (!monsters[i]->isDead()) {
+        if (!monsters[i]->isDisabled()) {
             // if monster is dead
             currentMonsterCoordinate = monsters[i]->getCoordinate();
             if (currentMonsterCoordinate->y == monsterObject->y && currentMonsterCoordinate->x == monsterObject->x) {
@@ -1189,7 +1192,7 @@ void d20Game::interactWithMonster() {
                         wMonster = NULL;
                         quit = TRUE;
                         // remove monster from map
-                        map->setAtLocation(currentMonsterCoordinate->y, currentMonsterCoordinate->x, MapObject(currentMonsterCoordinate->y, currentMonsterCoordinate->x, EMPTY));
+                        map->getAtLocation(monster->getCoordinate()->y, monster->getCoordinate()->x)->mapObjectType = EMPTY;
                     } else {
                         updateMonsterVital(monster);
                         // monster strikes back
@@ -1214,16 +1217,15 @@ void d20Game::interactWithMonster() {
                 break;
         }
     }
-    // refreshmap
-    refreshmap();
     
+    // refresh the map
+    refreshmap();
     // clean the console
     // updateConsole("");
     // clean the windows
     if (wMonster != NULL)
         wkill(wMonster);
     wMonster = NULL;
-    
 }
 
 MapObject* d20Game::getPrioritaryInteractableObject() {
@@ -1246,18 +1248,36 @@ MapObject* d20Game::getPrioritaryInteractableObject() {
     objectArray[7] = map->getAtLocation(player->getCoordinate()->y + 1, player->getCoordinate()->x + 1);
     
     for (int i = 0; i < 8; i++) {
-        if (objectArray[i]->mapObjectType == MONSTER)
+        if (objectArray[i]->mapObjectType == MONSTER) {
+            // make this object blink
+            wattron(stdscr, A_BLINK);
+            mvwprintw(stdscr, objectArray[i]->y, objectArray[i]->x + 16, "x");
+            wattroff(stdscr, A_BLINK);
+            refresh();
             return objectArray[i];
+        }
     }
     
     for (int i = 0; i < 8; i++) {
-        if (objectArray[i]->mapObjectType == TREASURE_CHEST)
+        if (objectArray[i]->mapObjectType == TREASURE_CHEST) {
+            // make this object blink
+            wattron(stdscr, A_BLINK);
+            mvwprintw(stdscr, objectArray[i]->y, objectArray[i]->x + 16, "n");
+            wattroff(stdscr, A_BLINK);
+            refresh();
             return objectArray[i];
+        }
     }
     
     for (int i = 0; i < 8; i++) {
-        if (objectArray[i]->mapObjectType == MERCHANT)
+        if (objectArray[i]->mapObjectType == MERCHANT) {
+            // make this object blink
+            wattron(stdscr, A_BLINK);
+            mvwprintw(stdscr, objectArray[i]->y, objectArray[i]->x + 16, "Y");
+            wattroff(stdscr, A_BLINK);
+            refresh();
             return objectArray[i];
+        }
     }
     
     
@@ -1546,10 +1566,8 @@ void d20Game::movePlayerPosition(int y, int x) {
         } else if ((map->getAtLocation(y, x))->mapObjectType == EXIT) {
             // remove the old player location
             (map->getAtLocation(player_y, player_x))->mapObjectType = EMPTY;
-            //mvwprintw(stdscr, player_y, player_x+16, " ");
             // set the new player location
             player->setCoordinate(y, x);
-            refreshmap();
         }
     }
 }
