@@ -56,6 +56,10 @@ int main (int argc, const char* argv[]) {
     ig->constructWeapon("The Fallen Star", TWOHAND, MEDIUM);
     player->putInventoryItem(ig->getWeapon(), FALSE);
     
+    ig->setShieldBuilder(new TowerShield());
+    ig->constructShield("The Barricade");
+    player->putInventoryItem(ig->getShield(), FALSE);
+    
     bool quit = FALSE;
     while (!quit) {
         cout << "1. Map Editor" << endl;

@@ -41,11 +41,39 @@ void FullplateArmorBuilder::buildArmor(string name, ArmorSlot slot) {
     armor->setItemType(IS_ARMOR);
 }
 
+void BucklerBuilder::buildShield(string name) {
+    shield->setName(name);
+    shield->setWeaponWield(ONEHAND);
+    shield->setSize(SMALL);
+    shield->setCost();
+    shield->setArmor(1);
+    shield->setItemType(IS_SHIELD);
+}
+
+void HeavyShield::buildShield(string name) {
+    shield->setName(name);
+    shield->setWeaponWield(ONEHAND);
+    shield->setSize(MEDIUM);
+    shield->setCost();
+    shield->setArmor(2);
+    shield->setItemType(IS_SHIELD);
+}
+
+void TowerShield::buildShield(string name) {
+    shield->setName(name);
+    shield->setWeaponWield(ONEHAND);
+    shield->setSize(BUGE);
+    shield->setCost();
+    shield->setArmor(4);
+    shield->setItemType(IS_SHIELD);
+}
+
 void LongswordBuilder::buildWeapon(string name, WeaponWield wield, Size size) {
     longsword->setName(name);
     longsword->setWeaponWield(wield);
     longsword->setSize(size);
     longsword->setCost();
+    longsword->setArmor(0);
     longsword->setAttackBonus(roll(5));
     longsword->setDamageBonus(roll(5));
     longsword->setItemType(IS_WEAPON);
@@ -57,6 +85,7 @@ void LongbowBuilder::buildWeapon(string name, WeaponWield wield, Size size) {
     longbow->setWeaponWield(wield);
     longbow->setSize(size);
     longbow->setCost();
+    longbow->setArmor(0);
     longbow->setAttackBonus(roll(5));
     longbow->setDamageBonus(roll(5));
     longbow->setItemType(IS_WEAPON);
@@ -141,9 +170,14 @@ void ItemGenerator::constructPotion(Size s) {
     potionBuilder->buildPotion(os, pool, cost);
 }
 
+void ItemGenerator::constructShield(string name) {
+    shieldBuilder->createNewItem();
+    shieldBuilder->buildShield(name);
+}
+
 Item* ItemGenerator::getRandomItem() {
     Item* randomItem;
-    switch (roll(3)) {
+    switch (roll(4)) {
         case 1: // armor
             switch (roll(3)) {
                 case 1:
@@ -183,6 +217,27 @@ Item* ItemGenerator::getRandomItem() {
             setPotionBuilder(new PotionBuilder());
             constructPotion();
             randomItem = getPotion();
+            break;
+        case 4:
+            switch (roll(3)) {
+                case 1:
+                    setShieldBuilder(new BucklerBuilder());
+                    constructShield("Random Buckler");
+                    randomItem = getShield();
+                    break;
+                case 2:
+                    setShieldBuilder(new HeavyShield());
+                    constructShield("Random Heavy Shield");
+                    randomItem = getShield();
+                    break;
+                case 3:
+                    setShieldBuilder(new TowerShield());
+                    constructShield("Random Tower Shield");
+                    randomItem = getShield();
+                    break;
+                default:
+                    break;
+            }
             break;
         default:
             break;

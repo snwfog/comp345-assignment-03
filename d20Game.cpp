@@ -389,7 +389,7 @@ void d20Game::updateItem(Item* it) {
         mvwprintw(wItem, 1, 2, it->getName().c_str());
         wattroff(wItem, A_STANDOUT);
         
-        msg << wp->getWeaponWield();
+        msg << wp->getWeaponWield() << " Weapon";
         mvwprintw(wItem, 2, 2, msg.str().c_str());
         msg.str("");
         
@@ -414,7 +414,7 @@ void d20Game::updateItem(Item* it) {
         mvwprintw(wItem, 1, 2, it->getName().c_str());
         wattroff(wItem, A_STANDOUT);
         
-        msg << am->getSlot();
+        msg << am->getSlot() << " Armor";
         mvwprintw(wItem, 2, 2, msg.str().c_str());
         msg.str("");
         
@@ -478,6 +478,23 @@ void d20Game::updateItem(Item* it) {
         
         msg << "Cost: " << pt->getCost() << "g";
         mvwprintw(wItem, 3, 2, msg.str().c_str());
+        msg.str("");
+    } else if (it->getItemType() == IS_SHIELD) {
+        Shield* am = static_cast<Shield*>(it);
+        wattron(wItem, A_STANDOUT);
+        mvwprintw(wItem, 1, 2, it->getName().c_str());
+        wattroff(wItem, A_STANDOUT);
+        
+        msg << am->getWeaponWield() << " Shield";
+        mvwprintw(wItem, 2, 2, msg.str().c_str());
+        msg.str("");
+        
+        msg << "Armor Bonus: " << am->getArmor();
+        mvwprintw(wItem, 3, 2, msg.str().c_str());
+        msg.str("");
+        
+        msg << "Cost: " << am->getCost() << "g";
+        mvwprintw(wItem, 4, 2, msg.str().c_str());
         msg.str("");
     }
     
@@ -1481,6 +1498,9 @@ void d20Game::inventoryEdit(int it) {
                     } else {
                         updateConsole("Error: You must unequip that item first!");
                     }
+                } else if (item->getItemType() == IS_SHIELD) {
+                    updateConsole("Error: You can only equip that item in your offhand!");
+                
                 } else {
                     updateConsole("Error: Illegal operation.");
                 }
@@ -1494,6 +1514,13 @@ void d20Game::inventoryEdit(int it) {
                         } else {
                             player->equipWeaponFromInventory(OFFHAND, index);
                         }
+                    } else {
+                        updateConsole("Error: You must unequip that item first!");
+                    }
+                } else if (item->getItemType() == IS_SHIELD) {
+                    wp = static_cast<Weapon*>(item);
+                    if (player->getEquippedWeapon(OFFHAND) == NULL) {
+                        player->equipWeaponFromInventory(OFFHAND, index);
                     } else {
                         updateConsole("Error: You must unequip that item first!");
                     }

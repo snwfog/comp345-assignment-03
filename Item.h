@@ -112,6 +112,7 @@ protected:
     WeaponType type;
     Size size;
     int attackBonus, damageBonus;
+    int armor;
 public:
     // setters
     void setSize(Size s) { 
@@ -134,6 +135,11 @@ public:
         stats[DAMAGE_BONUS] = db;
     }
     
+    void setArmor(int ar = 0) { 
+        armor = ar;
+        stats[ARMOR_CLASS] = ar;
+    }
+    
     void setWeaponType(WeaponType t) { type = t; }
     
     void setAllStats();
@@ -147,6 +153,7 @@ public:
     int getAttackBonus() { return attackBonus; }
     int getDamageBonus() { return damageBonus; }
     int getSizeModifier();
+    int getArmor() { return armor; }
     virtual int getWeaponDamage();
 };
 
@@ -163,7 +170,7 @@ class Longbow : public Weapon { };
 /**
  * Shield class, extends Weapon and Armor
  */
-class Shield : public Weapon, public Armor { };
+class Shield : public Weapon { };
 
 
 #endif

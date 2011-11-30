@@ -165,6 +165,9 @@ void Character::setEquippedWeapon(WeaponSlot ws, Weapon* wp) {
             case DAMAGE_BONUS:
                 maxDamageBonus += it->second;
                 break;
+            case ARMOR_CLASS:
+                maxArmorBonus += it->second;
+                break;
             default:
                 break;
         }
@@ -201,6 +204,9 @@ void Character::equipWeapon(WeaponSlot ws, Weapon* wp) {
             case DAMAGE_BONUS:
                 maxDamageBonus += it->second;
                 break;
+            case ARMOR_CLASS:
+                maxArmorBonus += it->second;
+                break;
             default:
                 break;
         }
@@ -230,6 +236,9 @@ Weapon* Character::unequipWeapon(WeaponSlot ws) {
                 break;
             case DAMAGE_BONUS:
                 maxDamageBonus -= it->second;
+                break;
+            case ARMOR_CLASS:
+                maxArmorBonus -= it->second;
                 break;
             default:
                 break;
@@ -357,26 +366,23 @@ int Character::getAttackRoll(int round) {
             weaponModifier = toModifier(abilityScores[DEX]);
         else
             weaponModifier = toModifier(abilityScores[STR]);
-
         if (mh->getWeaponWield() == TWOHAND || oh == NULL) {
             sizeModifier = mh->getSizeModifier();
         } else if (oh != NULL) {
             sizeModifier = mh->getSizeModifier() + oh->getSizeModifier();
         }
-    } else if (oh != NULL) {
+    } else if (oh != NULL && oh->getItemType() != IS_SHIELD) {
         sizeModifier = oh->getSizeModifier();
+    } else {
+        weaponModifier = toModifier(abilityScores[STR]);
     }
-    
-    
     
     attackRoll = aRoll + attackBonus(round) + weaponModifier + sizeModifier;
     msg << this->getName() << " rolls " << attackRoll << " [" << aRoll << " (d20) + " << attackBonus(round) << " (attack bonus) + " << weaponModifier << " (ability modifier) + " << sizeModifier << " (size modifier)].";
     observer->updateConsole(&msg, TRUE);
     msg.str("");
     msg.clear();
-    
 
-    
     return attackRoll;
 }
 

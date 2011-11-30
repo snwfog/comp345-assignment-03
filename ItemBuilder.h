@@ -43,6 +43,27 @@ public:
     void buildArmor(string name = "Random Fullplate Armor", ArmorSlot slot = static_cast<ArmorSlot>(roll(6)));
 };
 
+class ShieldBuilder : public ItemBuilder {
+protected:
+    Shield* shield;
+public:
+    Shield* getShield() { return shield; }
+    void createNewItem() { shield = new Shield(); }
+    virtual void buildShield(string) = 0;
+};
+
+class BucklerBuilder : public ShieldBuilder {
+    void buildShield(string);
+};
+
+class HeavyShield : public ShieldBuilder {
+    void buildShield(string);
+};
+
+class TowerShield : public ShieldBuilder {
+    void buildShield(string);
+};
+
 class WeaponBuilder : public ItemBuilder {
 protected:
     Weapon* weapon;
@@ -70,10 +91,7 @@ public:
     void buildWeapon(string, WeaponWield, Size);
 };
 
-class ShieldBuilder : public ItemBuilder {
-protected:
-    
-};
+
 
 class PotionBuilder : public ItemBuilder {
 protected:
@@ -102,6 +120,10 @@ public:
     void constructPotion(Size s = static_cast<Size>(roll(4, 1, 3))); // between small to huge
     
     // shield builder
+    void setShieldBuilder(ShieldBuilder* shb) { shieldBuilder = shb; }
+    Shield* getShield() { return shieldBuilder->getShield(); }
+    void constructShield(string name);
+    
 
     // random item builder
     Item* getRandomItem();
@@ -109,6 +131,7 @@ public:
 private:
     ArmorBuilder* armorBuilder;
     WeaponBuilder* weaponBuilder;
+    ShieldBuilder* shieldBuilder;
     PotionBuilder* potionBuilder;
     
 };
