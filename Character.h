@@ -22,6 +22,8 @@ using std::vector;
 using std::string;
 using std::stringstream;
 
+int const BASE_EXP = 20;
+
 class Character {
 private:
     // basic character info
@@ -72,7 +74,7 @@ public:
     int getLevel() { return level; }
     int getExperience() { return experience; }
     //int getExperienceToLevel() { return experienceToLevel; }
-    int getExperienceToLevel() { return 20 * (pow(level, 2.0) + level*2 + 1); }
+    int getExperienceToLevel() { return BASE_EXP * (pow(level, 2.0) + level*2 + 1); }
     int getHitPoint() { return hitPoint; }
     int getManaPoint() { return manaPoint; }
     int getMaxHitPoint() { return maxHitPoint; }

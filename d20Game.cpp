@@ -1164,6 +1164,17 @@ void d20Game::interactWithMonster() {
         fg->createNewFighter();
         fg->getCharacter()->setCoordinate(monsterObject->y, monsterObject->x);
         fg->getCharacter()->attachCharacterObserver(this);
+        // set monster level and exp
+        // is player level > 1? true: -1 0 +1, false 1
+        int level = (player->getLevel() > 1 ? (player->getLevel() - 2) + roll(3) : 1);
+        fg->getCharacter()->setLevel(level);
+        fg->getCharacter()->setExperience(BASE_EXP * player->getLevel());
+        int hp = 0;
+        for (int i = 0; i < level; i++) {
+            hp += roll(10);
+        }
+        fg->getCharacter()->setMaxHitPoint(hp);
+        fg->getCharacter()->setHitPoint(hp);
         monsters.push_back(fg->getCharacter());
         monster = fg->getCharacter();
         currentMonsterCoordinate = new Coordinate(monsterObject->y, monsterObject->x);        
