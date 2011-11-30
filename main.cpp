@@ -22,9 +22,11 @@ int main (int argc, const char* argv[]) {
     
     int opt;
     string input = "";
-    cout << "************************************" << endl;
-    cout << "* Welcome to Dungeons and Dragons! *" << endl;
-    cout << "************************************" << endl;
+    cout << "***********************************" << endl;
+    cout << "* ====      Welcome to       ==== *" << endl;
+	cout << "*  === Dungeons and Dragons  ===  *" << endl;
+	cout << "*   ==       COMP345         ==   *" << endl;
+    cout << "***********************************" << endl;
     
     // generate a single fighter throughout the entire game
     FighterGenerator* fg = new FighterGenerator();
@@ -45,11 +47,14 @@ int main (int argc, const char* argv[]) {
     player->putInventoryItem(ig->getArmor(), FALSE);
     ig->constructArmor("Champion's Seal", FINGER);
     player->putInventoryItem(ig->getArmor(), FALSE);
-    ig->setLongswordBuilder(new LongswordBuilder());
-    ig->constructLongsword("The Ashbringer", TWOHAND, BUGE);
-    player->putInventoryItem(ig->getLongsword(), FALSE);
-    ig->constructLongsword("Treacherous Blade", TWOHAND, BUGE);
-    player->putInventoryItem(ig->getLongsword(), FALSE);
+    ig->setWeaponBuilder(new LongswordBuilder());
+    ig->constructWeapon("The Ashbringer", TWOHAND, BUGE);
+    player->putInventoryItem(ig->getWeapon(), FALSE);
+    ig->constructWeapon("Treacherous Blade", TWOHAND, BUGE);
+    player->putInventoryItem(ig->getWeapon(), FALSE);
+    ig->setWeaponBuilder(new LongbowBuilder());
+    ig->constructWeapon("The Fallen Star", TWOHAND, MEDIUM);
+    player->putInventoryItem(ig->getWeapon(), FALSE);
     
     bool quit = FALSE;
     while (!quit) {

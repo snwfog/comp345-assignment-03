@@ -135,7 +135,7 @@ void Weapon::setAllStats() {
     setDamageBonus(roll(10));
 }
 
-void Longsword::setCost() {
+void Weapon::setCost() {
     switch (size) {
     case FINE:
         cost = 5;
@@ -170,7 +170,7 @@ void Longsword::setCost() {
     }
 }
 
-int Longsword::getWeaponDamage() {
+int Weapon::getWeaponDamage() {
     switch (size) {
         case FINE:
             return roll(2);

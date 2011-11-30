@@ -146,6 +146,7 @@ private:
      */
     void interactWithEnvironment();
     MapObject* getPrioritaryInteractableObject();
+    MapObject* getPrioritaryInteractableObjectRadius2();
     void interactWithMerchant();
     // edit player inventory at merchant
     void interactWithChest();

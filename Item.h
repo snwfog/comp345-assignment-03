@@ -28,8 +28,8 @@ enum Size { FINE = 1, DIMINUTIVE, TINY, SMALL, MEDIUM, LARGE, BUGE, GARGANTUAN, 
 enum WeaponSlot { MAINHAND = 1, OFFHAND };
 enum WeaponWield { ONEHAND = 1, TWOHAND };
 enum Attribute { ARMOR_CLASS = 20, MAX_DEXTERITY, ARMOR_SLOT, WEAPON_WIELD, WEAPON_SLOT, SIZE, POTION_POOL, CON, STR, DEX, WIS, INT, CHR, ATTACK_BONUS, DAMAGE_BONUS, CRITICAL };
-enum ItemType { IS_WEAPON, IS_ARMOR, IS_POTION };
-
+enum ItemType { IS_WEAPON, IS_ARMOR, IS_SHIELD, IS_POTION };
+enum WeaponType { IS_RANGE, IS_MELEE };
 std::ostream& operator <<(std::ostream& os, const ArmorSlot& s);
 std::ostream& operator <<(std::ostream& os, const WeaponSlot& s);
 std::ostream& operator <<(std::ostream& os, const WeaponWield& s);
@@ -109,6 +109,7 @@ class Weapon : public Item {
 protected:
     // int hardness, critical;
     WeaponWield wield;
+    WeaponType type;
     Size size;
     int attackBonus, damageBonus;
 public:
@@ -133,26 +134,36 @@ public:
         stats[DAMAGE_BONUS] = db;
     }
     
+    void setWeaponType(WeaponType t) { type = t; }
+    
     void setAllStats();
     
-    virtual void setCost() = 0;
+    virtual void setCost();
     
     // getters
     Size getSize() { return size; }
     WeaponWield getWeaponWield() { return wield; }
+    WeaponType getWeaponType() { return type; }
     int getAttackBonus() { return attackBonus; }
     int getDamageBonus() { return damageBonus; }
-    int getSizeModifier();    
-    virtual int getWeaponDamage() = 0;
+    int getSizeModifier();
+    virtual int getWeaponDamage();
 };
 
 /**
  * Longsword class, extends Weapon
  */
-class Longsword : public Weapon {
-public:
-    void setCost();
-    int getWeaponDamage();
-};
+class Longsword : public Weapon { };
+
+/**
+ * Longsword class, extends Weapon
+ */
+class Longbow : public Weapon { };
+
+/**
+ * Shield class, extends Weapon and Armor
+ */
+class Shield : public Weapon, public Armor { };
+
 
 #endif

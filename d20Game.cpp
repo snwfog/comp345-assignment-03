@@ -47,8 +47,8 @@ void d20Game::updateVital() {
     msg.str("");
     msg.clear();
     
-    //msg << "EXP: " << c->getExperience() << "/" c->getExperience();
-    msg << "EXP: NA";
+    int experiencePercent = (player->getExperience()/(double)player->getExperienceToLevel())*100;
+    msg << "EXP: " << experiencePercent << "%%";
     mvwprintw(wVital, 3, 2, msg.str().c_str());
     msg.str("");
     msg.clear();
@@ -131,7 +131,8 @@ WINDOW* d20Game::createWindowOption() {
 
 void d20Game::updateOption() {
     mvwprintw(wOption, 1, 2, "[i]nventory");
-    mvwprintw(wOption, 2, 2, "[q]uit");
+    mvwprintw(wOption, 2, 2, "[d]interact");
+	mvwprintw(wOption, 3, 2, "[q]uit");
     wrefresh(wOption);
 }
 
@@ -704,6 +705,9 @@ void d20Game::killCharacterPanel() {
  * Game playing related functions
  */
 void d20Game::endgame() {
+    // level up the player automatically
+    // player->levelUp();
+    
     // save character stuffs // not implemented
     
     // put character back to initial position calls
@@ -789,6 +793,9 @@ void d20Game::start() {
                 case KEY_RIGHT:
                     move(c);
                     break;
+				case 'm':
+					player->levelUp();
+					break;
                 case 'i':
                     loadCharacterPanel();
                     break;
@@ -824,20 +831,19 @@ void d20Game::start() {
  * Player actions/interactions
  */
 void d20Game::interactWithEnvironment() {
-    switch (getPrioritaryInteractableObject()->mapObjectType) {
-        case MONSTER:
+    if (getPrioritaryInteractableObject()->mapObjectType == MONSTER)
+        interactWithMonster();
+    else if (getPrioritaryInteractableObject()->mapObjectType == TREASURE_CHEST)
+        interactWithChest();
+    else if (getPrioritaryInteractableObject()->mapObjectType == MERCHANT)
+        interactWithMerchant();
+    else if (getPrioritaryInteractableObjectRadius2()->mapObjectType == MONSTER)
+        if (player->getEquippedWeapon(MAINHAND) != NULL && player->getEquippedWeapon(MAINHAND)->getWeaponType() == IS_RANGE)
             interactWithMonster();
-            break;
-        case TREASURE_CHEST:
-            interactWithChest();
-            break;
-        case MERCHANT:
-            interactWithMerchant();
-            break;
-        default:
-            updateConsole("Error: There aren't anything for you to interact with!");
-            break;
-    }
+        else
+            updateConsole("Error: A ranged weapon is required for this interaction!");
+    else
+        updateConsole("Error: There aren't anything around you to interact with!");
 }
 
 void d20Game::interactWithMerchant() {
@@ -1154,9 +1160,8 @@ void d20Game::interactWithMonster() {
     if (monster == NULL) {
         FighterGenerator* fg = new FighterGenerator();
         // set a bully monster
-        fg->setCharacterBuilder(new BullyBuilder());
-        // set his name
-        fg->createNewFighter("Evil Gobs");
+        fg->setCharacterBuilder(new MonsterBuilder());
+        fg->createNewFighter();
         fg->getCharacter()->setCoordinate(monsterObject->y, monsterObject->x);
         fg->getCharacter()->attachCharacterObserver(this);
         monsters.push_back(fg->getCharacter());
@@ -1171,6 +1176,7 @@ void d20Game::interactWithMonster() {
     stringstream msg;
     bool quit = FALSE;
     int c;
+    int numberOfRound;
     
     while (!quit) {
         switch (c = getch()) {
@@ -1179,21 +1185,33 @@ void d20Game::interactWithMonster() {
                 break;
             case 'b':
                 if (!player->isDisabled()) {
-                    player->battle(monster);
-                    // disabled monster is dead monster
-                    if (monster->isDisabled()) {
-                        msg << "You killed " << monster->getName() << ".";
-                        updateConsole(msg.str(), TRUE);
-                        msg.str("");
-                        msg.clear();
-                        
-                        // remove monster pane
-                        wkill(wMonster);
-                        wMonster = NULL;
-                        quit = TRUE;
-                        // remove monster from map
-                        map->getAtLocation(monster->getCoordinate()->y, monster->getCoordinate()->x)->mapObjectType = EMPTY;
-                    } else {
+                    numberOfRound = player->attackPerRound();
+                    msg << "You have " << numberOfRound << " round(s).";
+                    updateConsole(msg.str(), TRUE);
+                    msg.str("");
+                    msg.clear();
+                    for (int i = 0; i < numberOfRound; i++) {
+                        player->battle(monster, i+1);
+                        // disabled monster is dead monster
+                        if (monster->isDisabled()) {
+                            msg << "You killed " << monster->getName() << " (+" << monster->getExperience() << " exp).";
+                            updateConsole(msg.str(), TRUE);
+                            msg.str("");
+                            msg.clear();
+                            
+                            // grant player experience
+                            player->setExperience(player->getExperience() + monster->getExperience(), TRUE);
+                            // remove monster pane
+                            wkill(wMonster);
+                            wMonster = NULL;
+                            quit = TRUE;
+                            // remove monster from map
+                            map->getAtLocation(monster->getCoordinate()->y, monster->getCoordinate()->x)->mapObjectType = EMPTY;
+                            break; // player stop attacking
+                        }
+                    }
+                    // if monster still not dead, attack player once
+                    if (!monster->isDisabled()) {
                         updateMonsterVital(monster);
                         // monster strikes back
                         monster->battle(player);
@@ -1229,6 +1247,7 @@ void d20Game::interactWithMonster() {
 }
 
 MapObject* d20Game::getPrioritaryInteractableObject() {
+    // check for radius = 1, return all interactable objects
     // check top right
     MapObject* objectArray[8];
     objectArray[0] = map->getAtLocation(player->getCoordinate()->y - 1, player->getCoordinate()->x - 1);
@@ -1280,7 +1299,39 @@ MapObject* d20Game::getPrioritaryInteractableObject() {
         }
     }
     
+    return new MapObject(-1, -1, EMPTY);
+}
+
+MapObject* d20Game::getPrioritaryInteractableObjectRadius2() {
+    // check for radius = 2, returns only monster
+    MapObject* objectArray2[16];
+    objectArray2[0] = map->getAtLocation(player->getCoordinate()->y - 2, player->getCoordinate()->x - 2);
+    objectArray2[1] = map->getAtLocation(player->getCoordinate()->y - 2, player->getCoordinate()->x - 1);
+    objectArray2[2] = map->getAtLocation(player->getCoordinate()->y - 2, player->getCoordinate()->x);
+    objectArray2[3] = map->getAtLocation(player->getCoordinate()->y - 2, player->getCoordinate()->x + 1);
+    objectArray2[4] = map->getAtLocation(player->getCoordinate()->y - 2, player->getCoordinate()->x + 2);
+    objectArray2[5] = map->getAtLocation(player->getCoordinate()->y - 1, player->getCoordinate()->x - 1);
+    objectArray2[6] = map->getAtLocation(player->getCoordinate()->y, player->getCoordinate()->x - 2);
+    objectArray2[7] = map->getAtLocation(player->getCoordinate()->y + 1, player->getCoordinate()->x - 2);
+    objectArray2[8] = map->getAtLocation(player->getCoordinate()->y + 2, player->getCoordinate()->x - 2);
+    objectArray2[9] = map->getAtLocation(player->getCoordinate()->y + 2, player->getCoordinate()->x - 1);
+    objectArray2[10] = map->getAtLocation(player->getCoordinate()->y + 2, player->getCoordinate()->x);
+    objectArray2[11] = map->getAtLocation(player->getCoordinate()->y + 2, player->getCoordinate()->x + 1);
+    objectArray2[12] = map->getAtLocation(player->getCoordinate()->y + 2, player->getCoordinate()->x + 2);
+    objectArray2[13] = map->getAtLocation(player->getCoordinate()->y + 1, player->getCoordinate()->x + 2);
+    objectArray2[14] = map->getAtLocation(player->getCoordinate()->y, player->getCoordinate()->x + 2);
+    objectArray2[15] = map->getAtLocation(player->getCoordinate()->y - 1, player->getCoordinate()->x + 2);
     
+    for (int i = 0; i < 16; i++) {
+        if (objectArray2[i]->mapObjectType == MONSTER) {
+            // make this object blink
+            wattron(stdscr, A_BLINK);
+            mvwprintw(stdscr, objectArray2[i]->y, objectArray2[i]->x + 16, "x");
+            wattroff(stdscr, A_BLINK);
+            refresh();
+            return objectArray2[i];
+        }
+    }
     
     return new MapObject(-1, -1, EMPTY);
 }

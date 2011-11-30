@@ -60,7 +60,7 @@ private:
     Coordinate* coord;
 public:
     // functions
-    int attackPerRound() { return ceil(level/5); }
+    int attackPerRound() { return ceil(level/5.0); }
     int attackBonus(int attackRound) { return (maxAttackBonus - 5*(attackRound - 1)); }
     void giveGold(int g) { gold += g; }
     int takeGold(int g) { gold -= g; return g; }
@@ -71,7 +71,8 @@ public:
     int getGold() { return gold; }
     int getLevel() { return level; }
     int getExperience() { return experience; }
-    int getExperienceToLevel() { return experienceToLevel; }
+    //int getExperienceToLevel() { return experienceToLevel; }
+    int getExperienceToLevel() { return 20 * (pow(level, 2.0) + level*2 + 1); }
     int getHitPoint() { return hitPoint; }
     int getManaPoint() { return manaPoint; }
     int getMaxHitPoint() { return maxHitPoint; }
@@ -91,7 +92,7 @@ public:
     void setCharacterClass(string n) { characterClass = n; }
     void setGold(int g) { gold = g; }
     void setLevel(int l) { level = l; }
-    void setExperience(int exp) { experience = exp; }
+    void setExperience(int exp, bool = FALSE);
     void setHitPoint(int hp) { hitPoint = hp; }
     void setManaPoint(int mp) { manaPoint = mp; }
     void setMaxHitPoint(int maxhp) { maxHitPoint = maxhp; }
@@ -117,8 +118,8 @@ public:
     
     void usePotion(Potion*);
     // main d20 battle function
-    void battle(Character*);
-    int getAttackRoll();
+    void battle(Character*, int round = 1);
+    int getAttackRoll(int round = 1);
     
     void removeInventoryItem(int index, bool notify = TRUE);
     void putInventoryItem(Item*, bool notify = TRUE);

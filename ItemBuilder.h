@@ -43,13 +43,36 @@ public:
     void buildArmor(string name = "Random Fullplate Armor", ArmorSlot slot = static_cast<ArmorSlot>(roll(6)));
 };
 
-class LongswordBuilder : public ItemBuilder {
+class WeaponBuilder : public ItemBuilder {
 protected:
+    Weapon* weapon;
+public:
+    virtual Weapon* getWeapon() = 0;
+    virtual void createNewItem() = 0;
+    virtual void buildWeapon(string, WeaponWield, Size) = 0;
+};
+
+class LongswordBuilder : public WeaponBuilder {
+private:
     Longsword* longsword;
 public:
     Longsword* getWeapon() { return longsword; }
     void createNewItem() { longsword = new Longsword(); }
-    void buildLongsword(string name, WeaponWield wield, Size size);
+    void buildWeapon(string, WeaponWield, Size);
+};
+
+class LongbowBuilder : public WeaponBuilder {
+protected:
+    Longbow* longbow;
+public:
+    Longbow* getWeapon() { return longbow; }
+    void createNewItem() { longbow = new Longbow(); }
+    void buildWeapon(string, WeaponWield, Size);
+};
+
+class ShieldBuilder : public ItemBuilder {
+protected:
+    
 };
 
 class PotionBuilder : public ItemBuilder {
@@ -68,22 +91,24 @@ public:
     Armor* getArmor() { return armorBuilder->getArmor(); }
     void constructArmor(string name, ArmorSlot slot);
     
-    // longsword builder
-    void setLongswordBuilder(LongswordBuilder* lsb) { longswordBuilder = lsb; }
-    Longsword* getLongsword() { return longswordBuilder->getWeapon(); }
-    void constructLongsword(string name = "Random Longsword", WeaponWield wield = static_cast<WeaponWield>(roll(2)), Size size = static_cast<Size>(roll(9)));
+    // weapon builder
+    void setWeaponBuilder(WeaponBuilder* wpb) { weaponBuilder = wpb; }
+    Weapon* getWeapon() { return weaponBuilder->getWeapon(); }
+    void constructWeapon(string name, WeaponWield wield, Size size);
     
     // potion builder
     void setPotionBuilder(PotionBuilder* pb) { potionBuilder = pb; }
     Potion* getPotion() { return potionBuilder->getPotion(); }
     void constructPotion(Size s = static_cast<Size>(roll(4, 1, 3))); // between small to huge
     
+    // shield builder
+
     // random item builder
     Item* getRandomItem();
     
 private:
     ArmorBuilder* armorBuilder;
-    LongswordBuilder* longswordBuilder;
+    WeaponBuilder* weaponBuilder;
     PotionBuilder* potionBuilder;
     
 };

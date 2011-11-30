@@ -39,6 +39,7 @@ void BullyBuilder::initializeCharacter() {
     
     character->setCharacterClass("Bully");
     character->setLevel(1);
+    character->setExperience(0);
     character->setMaxAttackBonus(1);
     character->setMaxDamageBonus(1);
     character->setArmorBonus(0);
@@ -55,6 +56,7 @@ void NimbleBuilder::initializeCharacter() {
     
     character->setCharacterClass("Nimble");
     character->setLevel(1);
+    character->setExperience(0);
     character->setMaxAttackBonus(1);
     character->setMaxDamageBonus(1);
     character->setArmorBonus(0);
@@ -71,6 +73,7 @@ void TankBuilder::initializeCharacter() {
     
     character->setCharacterClass("Tank");
     character->setLevel(1);
+    character->setExperience(0);
     character->setMaxAttackBonus(1);
     character->setMaxDamageBonus(1);
     character->setArmorBonus(0);
@@ -80,6 +83,25 @@ void TankBuilder::initializeCharacter() {
     character->setManaPoint(0);
     character->setMaxManaPoint(character->getManaPoint());
     character->wipeAllContainer();
+}
+
+void MonsterBuilder::initializeCharacter() {
+    Attribute abilityRanks[] = { DEX, CON, STR, INT, CHR, WIS };
+    
+    character->setName("Evil Goblins");
+    character->setCharacterClass("Monster");
+    character->setLevel(1);
+    character->setExperience(20); // set default experience to gain
+    character->setMaxAttackBonus(1);
+    character->setMaxDamageBonus(1);
+    character->setArmorBonus(0);
+    setBaseAbilityScore(abilityRanks);
+    character->setHitPoint(roll(10) + toModifier(CON));
+    character->setMaxHitPoint(character->getHitPoint());
+    character->setManaPoint(0);
+    character->setMaxManaPoint(character->getManaPoint());
+    character->wipeAllContainer();
+    
     
     // monster gear
     ItemGenerator* ig = new ItemGenerator();
@@ -94,26 +116,9 @@ void TankBuilder::initializeCharacter() {
     ig->constructArmor("NPC Monster Boots", FEET);
     character->setEquippedArmor(FEET, ig->getArmor());
     
-    ig->constructLongsword("Thief's Poinard", ONEHAND, MEDIUM);
-    character->setEquippedWeapon(MAINHAND, ig->getLongsword());
-}
-
-void MonsterBuilder::initializeCharacter() {
-    Attribute abilityRanks[] = { DEX, CON, STR, INT, CHR, WIS };
-    
-    character->setCharacterClass("Evil Goblins");
-    character->setLevel(1);
-    character->setMaxAttackBonus(1);
-    character->setMaxDamageBonus(1);
-    character->setArmorBonus(0);
-    setBaseAbilityScore(abilityRanks);
-    character->setHitPoint(roll(10) + toModifier(CON));
-    character->setMaxHitPoint(character->getHitPoint());
-    character->setManaPoint(0);
-    character->setMaxManaPoint(character->getManaPoint());
-    character->wipeAllContainer();
-    
-    
+    ig->setWeaponBuilder(new LongswordBuilder());
+    ig->constructWeapon("Thief's Poinard", ONEHAND, MEDIUM);
+    character->setEquippedWeapon(MAINHAND, ig->getWeapon());
 }
 
 void FighterGenerator::createNewFighter() {

@@ -41,7 +41,7 @@ void FullplateArmorBuilder::buildArmor(string name, ArmorSlot slot) {
     armor->setItemType(IS_ARMOR);
 }
 
-void LongswordBuilder::buildLongsword(string name, WeaponWield wield, Size size) {
+void LongswordBuilder::buildWeapon(string name, WeaponWield wield, Size size) {
     longsword->setName(name);
     longsword->setWeaponWield(wield);
     longsword->setSize(size);
@@ -49,6 +49,18 @@ void LongswordBuilder::buildLongsword(string name, WeaponWield wield, Size size)
     longsword->setAttackBonus(roll(5));
     longsword->setDamageBonus(roll(5));
     longsword->setItemType(IS_WEAPON);
+    longsword->setWeaponType(IS_MELEE);
+}
+
+void LongbowBuilder::buildWeapon(string name, WeaponWield wield, Size size) {
+    longbow->setName(name);
+    longbow->setWeaponWield(wield);
+    longbow->setSize(size);
+    longbow->setCost();
+    longbow->setAttackBonus(roll(5));
+    longbow->setDamageBonus(roll(5));
+    longbow->setItemType(IS_WEAPON);
+    longbow->setWeaponType(IS_RANGE);
 }
 
 void PotionBuilder::buildPotion(string name, int pool, int cost) {
@@ -64,9 +76,9 @@ void ItemGenerator::constructArmor(string name, ArmorSlot slot) {
     armorBuilder->buildArmor(name, slot);
 }
 
-void ItemGenerator::constructLongsword(string name, WeaponWield wield, Size size) {
-    longswordBuilder->createNewItem();
-    longswordBuilder->buildLongsword(name, wield, size);
+void ItemGenerator::constructWeapon(string name, WeaponWield wield, Size size) {
+    weaponBuilder->createNewItem();
+    weaponBuilder->buildWeapon(name, wield, size);
 }
 
 void ItemGenerator::constructPotion(Size s) {
@@ -152,9 +164,20 @@ Item* ItemGenerator::getRandomItem() {
             randomItem = getArmor();
             break;
         case 2:
-            setLongswordBuilder(new LongswordBuilder());
-            constructLongsword();
-            randomItem = getLongsword();
+            switch (roll(2)) {
+                case 1:
+                    setWeaponBuilder(new LongswordBuilder());
+                    constructWeapon("Random Longsword", static_cast<WeaponWield>(roll(2)), static_cast<Size>(roll(9)));
+                    randomItem = getWeapon();
+                    break;
+                case 2:
+                    setWeaponBuilder(new LongbowBuilder());
+                    constructWeapon("Random Longbow", TWOHAND, MEDIUM);
+                    randomItem = getWeapon();
+                    break;
+                default:
+                    break;
+            }
             break;
         case 3:
             setPotionBuilder(new PotionBuilder());

@@ -251,6 +251,18 @@ Weapon* Character::unequipWeapon(WeaponSlot ws) {
 
 
 // character actions
+void Character::setExperience(int exp, bool notify) {
+    // give player the experience
+    experience = exp;
+    if (notify) {
+        // update his vital window
+        observer->updateVital();
+        
+        // check if he is good to level up
+        if (experience >= getExperienceToLevel())
+            this->levelUp();
+    }
+}
 
 void Character::levelUp() {
     setLevel(getLevel() + 1);
@@ -258,6 +270,8 @@ void Character::levelUp() {
     setMaxHitPoint(hp);
     setHitPoint(hp);
     setMaxAttackBonus(getMaxAttackBonus() + 1);
+    // reset player experience
+    setExperience(0);
     
     // notify character observer
     observer->updateBasic();
@@ -276,7 +290,7 @@ void Character::usePotion(Potion* pot) {
     observer->updateVital();
 }
 
-void Character::battle(Character* opponent) {
+void Character::battle(Character* opponent, int round) {
     stringstream msg;
     bool playerHit = FALSE;
     bool isCritical = FALSE;
@@ -287,7 +301,7 @@ void Character::battle(Character* opponent) {
     if (rl == 20) {
         playerHit = TRUE;
         // hit for sure
-        int attackRoll = getAttackRoll();
+        int attackRoll = getAttackRoll(round);
         if (attackRoll >= opponent->getArmorBonus()) {
             isCritical = TRUE;
             msg << this->getName() << " landed a critical hit on " << opponent->getName() << ".";
@@ -308,7 +322,7 @@ void Character::battle(Character* opponent) {
         msg.str("");
         msg.clear();
         damage = 0;
-    } else if (getAttackRoll() >= opponent->getArmorBonus()) {
+    } else if (getAttackRoll(round) >= opponent->getArmorBonus()) {
         playerHit = TRUE;
         damage = (this->getMaxDamagBonus());
     } else {
@@ -330,14 +344,20 @@ void Character::battle(Character* opponent) {
     observer->updateVital();
 }
 
-int Character::getAttackRoll() {
+int Character::getAttackRoll(int round) {
     stringstream msg;
     int aRoll = roll(20);
+    int weaponModifier = 0;
     int attackRoll = 0;
     int sizeModifier = 0;
     Weapon* mh = weapons[MAINHAND];
     Weapon* oh = weapons[OFFHAND];
     if (mh != NULL) {
+        if (mh->getWeaponType() == IS_RANGE)
+            weaponModifier = toModifier(abilityScores[DEX]);
+        else
+            weaponModifier = toModifier(abilityScores[STR]);
+
         if (mh->getWeaponWield() == TWOHAND || oh == NULL) {
             sizeModifier = mh->getSizeModifier();
         } else if (oh != NULL) {
@@ -348,11 +368,14 @@ int Character::getAttackRoll() {
     }
     
     
-    attackRoll = aRoll + maxAttackBonus + toModifier(abilityScores[STR]) + sizeModifier;
-    msg << this->getName() << " rolls " << attackRoll << " [" << aRoll << " (d20) + " << getMaxAttackBonus() << " (attack bonus) + " << toModifier(abilityScores[STR]) << " (strength modifier) + " << sizeModifier << " (size modifier)].";
+    
+    attackRoll = aRoll + attackBonus(round) + weaponModifier + sizeModifier;
+    msg << this->getName() << " rolls " << attackRoll << " [" << aRoll << " (d20) + " << attackBonus(round) << " (attack bonus) + " << weaponModifier << " (ability modifier) + " << sizeModifier << " (size modifier)].";
     observer->updateConsole(&msg, TRUE);
     msg.str("");
     msg.clear();
+    
+
     
     return attackRoll;
 }
